@@ -1,0 +1,176 @@
+{% extends "base.html" %}
+
+{% block page_actions %}
+<div class="btn-toolbar mb-2 mb-md-0">
+    <a href="/staff/add" class="btn btn-sm btn-primary">
+        <i class="fas fa-plus"></i> Add Staff
+    </a>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    {% if form_mode %}
+    <!-- Staff Form (Add/Edit) -->
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">{% if form_mode == 'edit' %}Edit{% else %}Add{% endif %} Staff Member</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post" action="{% if form_mode == 'edit' %}/staff/edit/{{ staff.id }}{% else %}/staff/add{% endif %}">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Name</label>
+                            <input type="text" class="form-control" id="name" name="name" value="{{ staff.name if form_mode == 'edit' else '' }}" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="bitrix_user_id" class="form-label">Bitrix24 User ID</label>
+                            <input type="text" class="form-control" id="bitrix_user_id" name="bitrix_user_id" value="{{ staff.bitrix_user_id if form_mode == 'edit' else '' }}">
+                            <div class="form-text">User ID for Bitrix24 calendar integration</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="photo_url" class="form-label">Photo URL</label>
+                            <input type="text" class="form-control" id="photo_url" name="photo_url" value="{{ staff.photo_url if form_mode == 'edit' else '' }}">
+                            <div class="form-text">URL to staff member's photo</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="price" class="form-label">Price (in smallest currency unit)</label>
+                            <input type="number" class="form-control" id="price" name="price" value="{{ staff.price if form_mode == 'edit' else '0' }}" min="0" required>
+                            <div class="form-text">Price in smallest currency unit (e.g., cents/tiyins)</div>
+                        </div>
+                        
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="is_active" name="is_active" {% if form_mode != 'edit' or staff.is_active %}checked{% endif %}>
+                            <label class="form-check-label" for="is_active">Active</label>
+                            <div class="form-text">Inactive staff won't be shown to users</div>
+                        </div>
+                        
+                        <div class="form-section border rounded">
+                            <h5>Multilingual Descriptions</h5>
+                            
+                            <div class="mb-3">
+                                <label for="description_en" class="form-label">English Description</label>
+                                <textarea class="form-control" id="description_en" name="description_en" rows="3">{{ staff.description_en if form_mode == 'edit' else '' }}</textarea>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="description_ru" class="form-label">Russian Description</label>
+                                <textarea class="form-control" id="description_ru" name="description_ru" rows="3">{{ staff.description_ru if form_mode == 'edit' else '' }}</textarea>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="description_uz" class="form-label">Uzbek Description</label>
+                                <textarea class="form-control" id="description_uz" name="description_uz" rows="3">{{ staff.description_uz if form_mode == 'edit' else '' }}</textarea>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <button type="submit" class="btn btn-primary">Save</button>
+                            <a href="/staff" class="btn btn-secondary ms-2">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <!-- Staff List -->
+    <div class="row mb-3">
+        <div class="col">
+            <!-- Search Form -->
+            <form action="/staff" method="get" class="d-flex">
+                <input type="text" name="search" class="form-control me-2" placeholder="Search staff..." value="{{ search }}">
+                <button type="submit" class="btn btn-primary">Search</button>
+                {% if search %}
+                <a href="/staff" class="btn btn-secondary ms-2">Clear</a>
+                {% endif %}
+            </form>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col">
+            <div class="card">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Price</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for staff in staff_members %}
+                                <tr {% if not staff.is_active %}class="table-danger"{% endif %}>
+                                    <td>{{ staff.id }}</td>
+                                    <td>{{ staff.name }}</td>
+                                    <td>{{ '{:.2f}'.format(staff.price / 100) }}</td>
+                                    <td>
+                                        <button class="btn btn-sm {% if staff.is_active %}btn-success{% else %}btn-danger{% endif %} toggle-active-btn" 
+                                                data-staff-id="{{ staff.id }}" 
+                                                data-active="{{ staff.is_active|lower }}">
+                                            {% if staff.is_active %}Active{% else %}Inactive{% endif %}
+                                        </button>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group">
+                                            <a href="/staff/edit/{{ staff.id }}" class="btn btn-sm btn-primary">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <a href="/schedule?staff_id={{ staff.id }}" class="btn btn-sm btn-info">
+                                                <i class="fas fa-calendar"></i>
+                                            </a>
+                                            <button class="btn btn-sm btn-danger delete-btn" data-id="{{ staff.id }}" data-type="staff">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="5" class="text-center">No staff members found.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Pagination -->
+                    {% if total_pages > 1 %}
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination justify-content-center">
+                            <li class="page-item {% if current_page == 1 %}disabled{% endif %}">
+                                <a class="page-link" href="/staff?page={{ current_page - 1 }}{% if search %}&search={{ search }}{% endif %}" aria-label="Previous">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>
+                            </li>
+                            
+                            {% for page_num in range(1, total_pages + 1) %}
+                            <li class="page-item {% if page_num == current_page %}active{% endif %}">
+                                <a class="page-link" href="/staff?page={{ page_num }}{% if search %}&search={{ search }}{% endif %}">{{ page_num }}</a>
+                            </li>
+                            {% endfor %}
+                            
+                            <li class="page-item {% if current_page == total_pages %}disabled{% endif %}">
+                                <a class="page-link" href="/staff?page={{ current_page + 1 }}{% if search %}&search={{ search }}{% endif %}" aria-label="Next">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,287 @@
+# Uzbek translations for Booking Bot.
+# Copyright (C) 2023 Booking Bot
+# This file is distributed under the same license as the Booking Bot project.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Booking Bot 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-10-20 12:00+0000\n"
+"PO-Revision-Date: 2023-10-20 12:00+0000\n"
+"Last-Translator: Translator <translator@example.com>\n"
+"Language-Team: Uzbek\n"
+"Language: uz\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+# General
+msgid "❌ Cancel"
+msgstr "❌ Bekor qilish"
+
+msgid "⬅️ Back"
+msgstr "⬅️ Orqaga"
+
+msgid "✅ Confirm"
+msgstr "✅ Tasdiqlash"
+
+msgid "Free"
+msgstr "Bepul"
+
+msgid "Unknown Staff"
+msgstr "Noma'lum mutaxassis"
+
+# Start and welcome messages
+msgid "👋 Welcome back to the Appointment Booking Bot!\n\nYou can book appointments with our staff members, view your existing bookings, and more."
+msgstr "👋 Qabulga yozilish botiga xush kelibsiz!\n\nSiz mutaxassislarimizga qabulga yozilishingiz, mavjud yozuvlaringizni ko'rishingiz va boshqa ko'proq imkoniyatlardan foydalanishingiz mumkin."
+
+# Help command
+msgid "📚 <b>Appointment Booking Bot Help</b>\n\n"
+"This bot allows you to book appointments with our staff members.\n\n"
+"<b>Available commands:</b>\n"
+"/start - Start the bot or return to the main menu\n"
+"/book - Book an appointment\n"
+"/mybookings - View your existing bookings\n"
+"/language - Change your language\n"
+"/help - Show this help message\n\n"
+"<b>Booking process:</b>\n"
+"1. Select a staff member\n"
+"2. Choose a date from the calendar\n"
+"3. Pick an available time slot\n"
+"4. Confirm your booking\n"
+"5. Pay for the appointment (if required)\n\n"
+"After successful booking and payment, you'll receive a confirmation "
+"with a Zoom meeting link for your online appointment."
+msgstr "📚 <b>Qabulga yozilish boti yordami</b>\n\n"
+"Bu bot orqali mutaxassislarimizga qabulga yozilishingiz mumkin.\n\n"
+"<b>Mavjud buyruqlar:</b>\n"
+"/start - Botni ishga tushirish yoki asosiy menyuga qaytish\n"
+"/book - Qabulga yozilish\n"
+"/mybookings - Mavjud yozuvlaringizni ko'rish\n"
+"/language - Tilni o'zgartirish\n"
+"/help - Ushbu yordam xabarini ko'rsatish\n\n"
+"<b>Qabulga yozilish jarayoni:</b>\n"
+"1. Mutaxassisni tanlang\n"
+"2. Kalendardan sanani tanlang\n"
+"3. Mavjud vaqtni tanlang\n"
+"4. Yozuvingizni tasdiqlang\n"
+"5. Qabul uchun to'lang (agar kerak bo'lsa)\n\n"
+"Muvaffaqiyatli ro'yxatdan o'tish va to'lovdan so'ng, "
+"onlayn qabulingiz uchun Zoom linkini olasiz."
+
+msgid "I don't understand that command. Please use the menu buttons or commands."
+msgstr "Bu buyruqni tushunmayman. Iltimos, menyu tugmalaridan yoki buyruqlardan foydalaning."
+
+# Booking process
+msgid "Please select a staff member to book an appointment with:"
+msgstr "Iltimos, qabulga yozilish uchun mutaxassisni tanlang:"
+
+msgid "Booking process cancelled. You can start again using /book command."
+msgstr "Qabulga yozilish jarayoni bekor qilindi. Siz /book buyrug'idan foydalanib qayta boshlashingiz mumkin."
+
+msgid "You can make a new booking or check your existing ones:"
+msgstr "Siz yangi yozuv qilishingiz yoki mavjud yozuvlaringizni tekshirishingiz mumkin:"
+
+msgid "<b>{name}</b>\n\n{description}\n\n<b>Price:</b> {price}"
+msgstr "<b>{name}</b>\n\n{description}\n\n<b>Narx:</b> {price}"
+
+msgid "No description available."
+msgstr "Tavsif mavjud emas."
+
+msgid "Photo available"
+msgstr "Foto mavjud"
+
+msgid "Please select a date for your appointment:"
+msgstr "Iltimos, qabulingiz uchun sanani tanlang:"
+
+msgid "Invalid navigation data."
+msgstr "Noto'g'ri navigatsiya ma'lumotlari."
+
+msgid "Please select a time for your appointment on {date}:"
+msgstr "Iltimos, {date} sanasida qabulingiz uchun vaqtni tanlang:"
+
+msgid "Error: Staff member not selected. Please start over."
+msgstr "Xato: Mutaxassis tanlanmadi. Iltimos, qayta boshlang."
+
+msgid "Error: Could not find staff member or user. Please start over."
+msgstr "Xato: Mutaxassis yoki foydalanuvchini topib bo'lmadi. Iltimos, qayta boshlang."
+
+msgid "Please provide your phone number to continue with booking.\n\nYou can use the button below to share your contact."
+msgstr "Qabulga yozilishni davom ettirish uchun telefon raqamingizni kiriting.\n\nKontaktingizni ulashish uchun quyidagi tugmadan foydalanishingiz mumkin."
+
+msgid "Share your phone number:"
+msgstr "Telefon raqamingizni ulashing:"
+
+msgid "<b>Booking Summary</b>\n\n<b>Staff:</b> {staff_name}\n<b>Date:</b> {date}\n<b>Time:</b> {time}\n<b>Price:</b> {price}\n\nPlease confirm your booking."
+msgstr "<b>Qabulga yozilish haqida ma'lumot</b>\n\n<b>Mutaxassis:</b> {staff_name}\n<b>Sana:</b> {date}\n<b>Vaqt:</b> {time}\n<b>Narx:</b> {price}\n\nIltimos, qabulga yozilishingizni tasdiqlang."
+
+msgid "Please provide a valid phone number or use the button to share your contact."
+msgstr "Iltimos, to'g'ri telefon raqami kiriting yoki kontaktingizni ulashish uchun tugmadan foydalaning."
+
+msgid "Please provide a valid phone number."
+msgstr "Iltimos, to'g'ri telefon raqamini kiriting."
+
+msgid "<b>Payment Required</b>\n\nYour booking has been created, but payment is required to confirm it.\n\n<b>Amount:</b> {price}\n\nPlease use the link below to complete your payment:"
+msgstr "<b>To'lov talab qilinadi</b>\n\nQabulga yozilishingiz yaratildi, lekin uni tasdiqlash uchun to'lov talab qilinadi.\n\n<b>Summa:</b> {price}\n\nTo'lovni tugatish uchun quyidagi havoladan foydalaning:"
+
+msgid "Click the button below to pay:"
+msgstr "To'lov qilish uchun quyidagi tugmani bosing:"
+
+msgid "💳 Pay Now"
+msgstr "💳 Hozir to'lash"
+
+msgid "After completing payment, please press the button below to check payment status:"
+msgstr "To'lovni tugatgandan so'ng, to'lov holatini tekshirish uchun quyidagi tugmani bosing:"
+
+msgid "🔄 Check Payment Status"
+msgstr "🔄 To'lov holatini tekshirish"
+
+msgid "<b>Booking Confirmed</b>\n\n"
+"Your appointment has been successfully booked.\n\n"
+"<b>Staff:</b> {staff_name}\n"
+"<b>Date:</b> {date}\n"
+"<b>Time:</b> {time}\n"
+msgstr "<b>Qabulga yozilish tasdiqlandi</b>\n\n"
+"Qabulga yozilishingiz muvaffaqiyatli amalga oshirildi.\n\n"
+"<b>Mutaxassis:</b> {staff_name}\n"
+"<b>Sana:</b> {date}\n"
+"<b>Vaqt:</b> {time}\n"
+
+msgid "\n<b>Zoom Meeting Link:</b>\n{zoom_link}"
+msgstr "\n<b>Zoom uchrashuv havolasi:</b>\n{zoom_link}"
+
+msgid "Thank you for booking. You can view your bookings using /mybookings command."
+msgstr "Qabulga yozilganingiz uchun rahmat. Siz /mybookings buyrug'idan foydalanib yozuvlaringizni ko'rishingiz mumkin."
+
+# Payment status
+msgid "Booking not found."
+msgstr "Qabulga yozilish topilmadi."
+
+msgid "Payment successful!"
+msgstr "To'lov muvaffaqiyatli amalga oshirildi!"
+
+msgid "<b>Payment Successful</b>\n\n"
+"Your booking has been confirmed.\n\n"
+"<b>Staff:</b> {staff_name}\n"
+"<b>Date:</b> {date}\n"
+"<b>Time:</b> {time}\n"
+msgstr "<b>To'lov muvaffaqiyatli</b>\n\n"
+"Qabulga yozilishingiz tasdiqlandi.\n\n"
+"<b>Mutaxassis:</b> {staff_name}\n"
+"<b>Sana:</b> {date}\n"
+"<b>Vaqt:</b> {time}\n"
+
+msgid "Payment is still pending. Please wait or try again later."
+msgstr "To'lov hali kutilmoqda. Iltimos, kuting yoki keyinroq qayta urinib ko'ring."
+
+msgid "Payment failed or was cancelled. Please try again."
+msgstr "To'lov amalga oshmadi yoki bekor qilindi. Iltimos, qayta urinib ko'ring."
+
+msgid "Payment failed or was cancelled. Would you like to try again?"
+msgstr "To'lov amalga oshmadi yoki bekor qilindi. Qayta urinmoqchimisiz?"
+
+msgid "💳 Try Again"
+msgstr "💳 Qayta urinish"
+
+msgid "❌ Cancel Booking"
+msgstr "❌ Qabulga yozilishni bekor qilish"
+
+msgid "Staff not found."
+msgstr "Mutaxassis topilmadi."
+
+# My bookings
+msgid "You don't have any upcoming bookings. Use /book to make a new booking."
+msgstr "Sizda kutilayotgan qabulga yozilishlar yo'q. Yangi qabulga yozilish uchun /book dan foydalaning."
+
+msgid "Your upcoming bookings:"
+msgstr "Kutilayotgan qabulga yozilishlaringiz:"
+
+msgid "❌ Close"
+msgstr "❌ Yopish"
+
+msgid "<b>Booking Details</b>\n\n"
+"<b>Staff:</b> {staff_name}\n"
+"<b>Date:</b> {date}\n"
+"<b>Time:</b> {time}\n"
+"<b>Status:</b> {status}\n"
+msgstr "<b>Qabulga yozilish tafsilotlari</b>\n\n"
+"<b>Mutaxassis:</b> {staff_name}\n"
+"<b>Sana:</b> {date}\n"
+"<b>Vaqt:</b> {time}\n"
+"<b>Holat:</b> {status}\n"
+
+msgid "🔄 Reschedule"
+msgstr "🔄 Qayta rejalashtirish"
+
+msgid "Please select a new date for your appointment:"
+msgstr "Iltimos, qabulingiz uchun yangi sanani tanlang:"
+
+msgid "Please select a new time for your appointment on {date}:"
+msgstr "Iltimos, {date} sanasidagi qabulingiz uchun yangi vaqtni tanlang:"
+
+msgid "Booking rescheduled successfully!"
+msgstr "Qabulga yozilish muvaffaqiyatli qayta rejalashtirildi!"
+
+msgid "Your booking has been rescheduled to {date} at {time}."
+msgstr "Qabulga yozilishingiz {date} kuni soat {time} ga qayta rejalashtirildi."
+
+msgid "View Updated Booking"
+msgstr "Yangilangan qabulga yozilishni ko'rish"
+
+msgid "Are you sure you want to cancel this booking?"
+msgstr "Haqiqatan ham ushbu qabulga yozilishni bekor qilmoqchimisiz?"
+
+msgid "✅ Yes, Cancel"
+msgstr "✅ Ha, bekor qilish"
+
+msgid "🔙 No, Go Back"
+msgstr "🔙 Yo'q, orqaga qaytish"
+
+msgid "Your booking has been cancelled."
+msgstr "Qabulga yozilishingiz bekor qilindi."
+
+msgid "Back to Bookings"
+msgstr "Qabulga yozilishlarga qaytish"
+
+# Status names
+msgid "⏳ Pending"
+msgstr "⏳ Kutilmoqda"
+
+msgid "💰 Payment Pending"
+msgstr "💰 To'lov kutilmoqda"
+
+msgid "✅ Confirmed"
+msgstr "✅ Tasdiqlangan"
+
+msgid "❌ Cancelled"
+msgstr "❌ Bekor qilingan"
+
+msgid "✓ Completed"
+msgstr "✓ Tugallangan"
+
+msgid "Unknown"
+msgstr "Noma'lum"
+
+# Navigation
+msgid "◀️ Previous"
+msgstr "◀️ Oldingi"
+
+msgid "▶️ Next"
+msgstr "▶️ Keyingi"
+
+# Menu buttons
+msgid "📅 Book Appointment"
+msgstr "📅 Qabulga yozilish"
+
+msgid "📋 My Bookings"
+msgstr "📋 Mening qabullarim"
+
+msgid "🌐 Change Language"
+msgstr "🌐 Tilni o'zgartirish"
+
+msgid "❓ Help"
+msgstr "❓ Yordam"
+
+msgid "Loading your bookings..."
+msgstr "Qabulga yozilishlaringiz yuklanmoqda..."

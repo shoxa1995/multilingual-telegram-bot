@@ -1,0 +1,54 @@
+<nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+    <div class="position-sticky pt-3 sidebar-sticky">
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link {% if request.url.path == '/' %}active{% endif %}" href="/">
+                    <i class="fas fa-tachometer-alt me-2"></i>
+                    Dashboard
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if '/staff' in request.url.path %}active{% endif %}" href="/staff">
+                    <i class="fas fa-user-tie me-2"></i>
+                    Staff Management
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if '/bookings' in request.url.path %}active{% endif %}" href="/bookings">
+                    <i class="fas fa-calendar-check me-2"></i>
+                    Bookings
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if '/schedule' in request.url.path %}active{% endif %}" href="/schedule">
+                    <i class="fas fa-clock me-2"></i>
+                    Schedules
+                </a>
+            </li>
+        </ul>
+        
+        <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+            <span>Reports</span>
+        </h6>
+        <ul class="nav flex-column mb-2">
+            <li class="nav-item">
+                <a class="nav-link" href="/bookings?date_from={{ now.strftime('%Y-%m-%d') }}">
+                    <i class="fas fa-file-alt me-2"></i>
+                    Today's Bookings
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/bookings?status=payment_pending">
+                    <i class="fas fa-credit-card me-2"></i>
+                    Pending Payments
+                </a>
+            </li>
+        </ul>
+        
+        <div class="px-3 mt-4">
+            <a href="/logout" class="btn btn-danger w-100">
+                <i class="fas fa-sign-out-alt me-2"></i> Logout
+            </a>
+        </div>
+    </div>
+</nav>

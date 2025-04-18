@@ -1,0 +1,287 @@
+# English translations for Booking Bot.
+# Copyright (C) 2023 Booking Bot
+# This file is distributed under the same license as the Booking Bot project.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Booking Bot 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-10-20 12:00+0000\n"
+"PO-Revision-Date: 2023-10-20 12:00+0000\n"
+"Last-Translator: Translator <translator@example.com>\n"
+"Language-Team: English\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+# General
+msgid "❌ Cancel"
+msgstr "❌ Cancel"
+
+msgid "⬅️ Back"
+msgstr "⬅️ Back"
+
+msgid "✅ Confirm"
+msgstr "✅ Confirm"
+
+msgid "Free"
+msgstr "Free"
+
+msgid "Unknown Staff"
+msgstr "Unknown Staff"
+
+# Start and welcome messages
+msgid "👋 Welcome back to the Appointment Booking Bot!\n\nYou can book appointments with our staff members, view your existing bookings, and more."
+msgstr "👋 Welcome back to the Appointment Booking Bot!\n\nYou can book appointments with our staff members, view your existing bookings, and more."
+
+# Help command
+msgid "📚 <b>Appointment Booking Bot Help</b>\n\n"
+"This bot allows you to book appointments with our staff members.\n\n"
+"<b>Available commands:</b>\n"
+"/start - Start the bot or return to the main menu\n"
+"/book - Book an appointment\n"
+"/mybookings - View your existing bookings\n"
+"/language - Change your language\n"
+"/help - Show this help message\n\n"
+"<b>Booking process:</b>\n"
+"1. Select a staff member\n"
+"2. Choose a date from the calendar\n"
+"3. Pick an available time slot\n"
+"4. Confirm your booking\n"
+"5. Pay for the appointment (if required)\n\n"
+"After successful booking and payment, you'll receive a confirmation "
+"with a Zoom meeting link for your online appointment."
+msgstr "📚 <b>Appointment Booking Bot Help</b>\n\n"
+"This bot allows you to book appointments with our staff members.\n\n"
+"<b>Available commands:</b>\n"
+"/start - Start the bot or return to the main menu\n"
+"/book - Book an appointment\n"
+"/mybookings - View your existing bookings\n"
+"/language - Change your language\n"
+"/help - Show this help message\n\n"
+"<b>Booking process:</b>\n"
+"1. Select a staff member\n"
+"2. Choose a date from the calendar\n"
+"3. Pick an available time slot\n"
+"4. Confirm your booking\n"
+"5. Pay for the appointment (if required)\n\n"
+"After successful booking and payment, you'll receive a confirmation "
+"with a Zoom meeting link for your online appointment."
+
+msgid "I don't understand that command. Please use the menu buttons or commands."
+msgstr "I don't understand that command. Please use the menu buttons or commands."
+
+# Booking process
+msgid "Please select a staff member to book an appointment with:"
+msgstr "Please select a staff member to book an appointment with:"
+
+msgid "Booking process cancelled. You can start again using /book command."
+msgstr "Booking process cancelled. You can start again using /book command."
+
+msgid "You can make a new booking or check your existing ones:"
+msgstr "You can make a new booking or check your existing ones:"
+
+msgid "<b>{name}</b>\n\n{description}\n\n<b>Price:</b> {price}"
+msgstr "<b>{name}</b>\n\n{description}\n\n<b>Price:</b> {price}"
+
+msgid "No description available."
+msgstr "No description available."
+
+msgid "Photo available"
+msgstr "Photo available"
+
+msgid "Please select a date for your appointment:"
+msgstr "Please select a date for your appointment:"
+
+msgid "Invalid navigation data."
+msgstr "Invalid navigation data."
+
+msgid "Please select a time for your appointment on {date}:"
+msgstr "Please select a time for your appointment on {date}:"
+
+msgid "Error: Staff member not selected. Please start over."
+msgstr "Error: Staff member not selected. Please start over."
+
+msgid "Error: Could not find staff member or user. Please start over."
+msgstr "Error: Could not find staff member or user. Please start over."
+
+msgid "Please provide your phone number to continue with booking.\n\nYou can use the button below to share your contact."
+msgstr "Please provide your phone number to continue with booking.\n\nYou can use the button below to share your contact."
+
+msgid "Share your phone number:"
+msgstr "Share your phone number:"
+
+msgid "<b>Booking Summary</b>\n\n<b>Staff:</b> {staff_name}\n<b>Date:</b> {date}\n<b>Time:</b> {time}\n<b>Price:</b> {price}\n\nPlease confirm your booking."
+msgstr "<b>Booking Summary</b>\n\n<b>Staff:</b> {staff_name}\n<b>Date:</b> {date}\n<b>Time:</b> {time}\n<b>Price:</b> {price}\n\nPlease confirm your booking."
+
+msgid "Please provide a valid phone number or use the button to share your contact."
+msgstr "Please provide a valid phone number or use the button to share your contact."
+
+msgid "Please provide a valid phone number."
+msgstr "Please provide a valid phone number."
+
+msgid "<b>Payment Required</b>\n\nYour booking has been created, but payment is required to confirm it.\n\n<b>Amount:</b> {price}\n\nPlease use the link below to complete your payment:"
+msgstr "<b>Payment Required</b>\n\nYour booking has been created, but payment is required to confirm it.\n\n<b>Amount:</b> {price}\n\nPlease use the link below to complete your payment:"
+
+msgid "Click the button below to pay:"
+msgstr "Click the button below to pay:"
+
+msgid "💳 Pay Now"
+msgstr "💳 Pay Now"
+
+msgid "After completing payment, please press the button below to check payment status:"
+msgstr "After completing payment, please press the button below to check payment status:"
+
+msgid "🔄 Check Payment Status"
+msgstr "🔄 Check Payment Status"
+
+msgid "<b>Booking Confirmed</b>\n\n"
+"Your appointment has been successfully booked.\n\n"
+"<b>Staff:</b> {staff_name}\n"
+"<b>Date:</b> {date}\n"
+"<b>Time:</b> {time}\n"
+msgstr "<b>Booking Confirmed</b>\n\n"
+"Your appointment has been successfully booked.\n\n"
+"<b>Staff:</b> {staff_name}\n"
+"<b>Date:</b> {date}\n"
+"<b>Time:</b> {time}\n"
+
+msgid "\n<b>Zoom Meeting Link:</b>\n{zoom_link}"
+msgstr "\n<b>Zoom Meeting Link:</b>\n{zoom_link}"
+
+msgid "Thank you for booking. You can view your bookings using /mybookings command."
+msgstr "Thank you for booking. You can view your bookings using /mybookings command."
+
+# Payment status
+msgid "Booking not found."
+msgstr "Booking not found."
+
+msgid "Payment successful!"
+msgstr "Payment successful!"
+
+msgid "<b>Payment Successful</b>\n\n"
+"Your booking has been confirmed.\n\n"
+"<b>Staff:</b> {staff_name}\n"
+"<b>Date:</b> {date}\n"
+"<b>Time:</b> {time}\n"
+msgstr "<b>Payment Successful</b>\n\n"
+"Your booking has been confirmed.\n\n"
+"<b>Staff:</b> {staff_name}\n"
+"<b>Date:</b> {date}\n"
+"<b>Time:</b> {time}\n"
+
+msgid "Payment is still pending. Please wait or try again later."
+msgstr "Payment is still pending. Please wait or try again later."
+
+msgid "Payment failed or was cancelled. Please try again."
+msgstr "Payment failed or was cancelled. Please try again."
+
+msgid "Payment failed or was cancelled. Would you like to try again?"
+msgstr "Payment failed or was cancelled. Would you like to try again?"
+
+msgid "💳 Try Again"
+msgstr "💳 Try Again"
+
+msgid "❌ Cancel Booking"
+msgstr "❌ Cancel Booking"
+
+msgid "Staff not found."
+msgstr "Staff not found."
+
+# My bookings
+msgid "You don't have any upcoming bookings. Use /book to make a new booking."
+msgstr "You don't have any upcoming bookings. Use /book to make a new booking."
+
+msgid "Your upcoming bookings:"
+msgstr "Your upcoming bookings:"
+
+msgid "❌ Close"
+msgstr "❌ Close"
+
+msgid "<b>Booking Details</b>\n\n"
+"<b>Staff:</b> {staff_name}\n"
+"<b>Date:</b> {date}\n"
+"<b>Time:</b> {time}\n"
+"<b>Status:</b> {status}\n"
+msgstr "<b>Booking Details</b>\n\n"
+"<b>Staff:</b> {staff_name}\n"
+"<b>Date:</b> {date}\n"
+"<b>Time:</b> {time}\n"
+"<b>Status:</b> {status}\n"
+
+msgid "🔄 Reschedule"
+msgstr "🔄 Reschedule"
+
+msgid "Please select a new date for your appointment:"
+msgstr "Please select a new date for your appointment:"
+
+msgid "Please select a new time for your appointment on {date}:"
+msgstr "Please select a new time for your appointment on {date}:"
+
+msgid "Booking rescheduled successfully!"
+msgstr "Booking rescheduled successfully!"
+
+msgid "Your booking has been rescheduled to {date} at {time}."
+msgstr "Your booking has been rescheduled to {date} at {time}."
+
+msgid "View Updated Booking"
+msgstr "View Updated Booking"
+
+msgid "Are you sure you want to cancel this booking?"
+msgstr "Are you sure you want to cancel this booking?"
+
+msgid "✅ Yes, Cancel"
+msgstr "✅ Yes, Cancel"
+
+msgid "🔙 No, Go Back"
+msgstr "🔙 No, Go Back"
+
+msgid "Your booking has been cancelled."
+msgstr "Your booking has been cancelled."
+
+msgid "Back to Bookings"
+msgstr "Back to Bookings"
+
+# Status names
+msgid "⏳ Pending"
+msgstr "⏳ Pending"
+
+msgid "💰 Payment Pending"
+msgstr "💰 Payment Pending"
+
+msgid "✅ Confirmed"
+msgstr "✅ Confirmed"
+
+msgid "❌ Cancelled"
+msgstr "❌ Cancelled"
+
+msgid "✓ Completed"
+msgstr "✓ Completed"
+
+msgid "Unknown"
+msgstr "Unknown"
+
+# Navigation
+msgid "◀️ Previous"
+msgstr "◀️ Previous"
+
+msgid "▶️ Next"
+msgstr "▶️ Next"
+
+# Menu buttons
+msgid "📅 Book Appointment"
+msgstr "📅 Book Appointment"
+
+msgid "📋 My Bookings"
+msgstr "📋 My Bookings"
+
+msgid "🌐 Change Language"
+msgstr "🌐 Change Language"
+
+msgid "❓ Help"
+msgstr "❓ Help"
+
+msgid "Loading your bookings..."
+msgstr "Loading your bookings..."
