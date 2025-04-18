@@ -1,0 +1,129 @@
+Multilingual Telegram Bot with Booking, Payments, Zoom, Bitrix24 & Admin Panel
+You are an expert full-stack Python developer (AI or human) tasked with building a production-grade Telegram bot for online appointment bookings.
+
+🎯 Core Functional Requirements
+1. Booking Bot (Telegram)
+Users can:
+
+Select a staff member
+
+View their profile (photo + multilingual description)
+
+Choose available days and times from a smart calendar
+
+Admin sets:
+
+Working days, time slots, and maximum meeting duration
+
+Availability can be adjusted anytime via admin panel
+
+Cancel button must be present at every FSM step
+
+Final confirmation uses inline buttons: ✅ Confirm | ❌ Cancel
+
+2. Multilingual Support
+Bot must support Uzbek, Russian, and English
+
+Language is selected at /start and persists across all flows
+
+All messages, buttons, and profile content must be localized
+
+3. No Overlapping Bookings
+Prevent double-booking by checking confirmed slots in real time
+
+Disable or hide already booked time slots from UI
+
+Time slots should be loaded dynamically based on current bookings
+
+4. Week Navigation
+Users can view current and next week's availability using:
+
+▶️ Next Week / ◀️ Previous Week buttons
+
+Skip to next available slots if the current week is fully booked
+
+5. Manage Bookings
+Users can run /mybookings to:
+
+View their upcoming appointments
+
+Reschedule (reselect time/date)
+
+Cancel with inline button confirmation
+
+💳 Payment Integration
+Integrate Click.uz payments via BotFather token
+
+Upon confirmation, user is asked to pay:
+
+Dynamic pricing per staff (configurable)
+
+After successful payment:
+
+Zoom meeting is generated
+
+Bitrix24 calendar event is created
+
+Confirmation sent to both admin and user
+
+ Calendar Integration: Bitrix24
+Each staff member has their own Bitrix24 calendar
+
+After booking/payment:
+
+A calendar event is added to the correct user's Bitrix24 calendar
+
+Event includes name, phone, Zoom link, and time
+
+Uses REST API via webhook or application
+
+Webhook and user IDs will be provided
+
+📹 Zoom Integration
+Uses OAuth app registered under company name
+
+Bot generates a Zoom meeting per booking after payment
+
+All Zoom links are created under a shared company Zoom account
+
+Multiple concurrent meetings are allowed
+
+🛠️ Admin Panel (Web-Based)
+Hosted on a subdomain (e.g. https://booking.go-study.uz)
+
+Admin can:
+
+View/edit staff schedules
+
+Add/cancel slots
+
+Monitor all bookings
+
+Export data
+
+Frontend: Tailwind/React or HTMX
+
+Backend: FastAPI or Flask
+
+Deploy on Render/Vercel or custom server
+
+✅ Tech Stack Requirements
+Python + aiogram for Telegram bot
+
+Bitrix24 REST API for calendars
+
+Zoom API (OAuth)
+
+Click.uz BotFather Payments
+
+Web admin panel: FastAPI + HTMX or React + Tailwind
+
+Deployment-ready
+
+🔒 Security
+Secure webhook verification
+
+State persistence with Redis or file/db
+
+Admin authentication for web panel
+
