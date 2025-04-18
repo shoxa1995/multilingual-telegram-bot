@@ -64,6 +64,21 @@ class User(db.Model):
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
 
+# Add context processor for datetime and current user
+@app.context_processor
+def inject_context():
+    from datetime import datetime
+    
+    # Get current user if user_id is in session
+    current_user = None
+    if 'user_id' in session:
+        current_user = User.query.get(session['user_id'])
+        
+    return {
+        'now': datetime.now(),
+        'current_user': current_user
+    }
+
 # Create tables and default admin user
 with app.app_context():
     db.create_all()
