@@ -7,7 +7,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.filters import Command, CommandStart
 from aiogram.exceptions import TelegramBadRequest
 
-from bot.database import Session, User
+from bot.database import sync_session, User
 from bot.keyboards.reply import language_keyboard, main_menu_keyboard
 from bot.keyboards.inline import staff_selection_keyboard
 from bot.middlewares.i18n import _, i18n
@@ -22,7 +22,7 @@ async def cmd_start(message: types.Message, state: FSMContext):
     await state.clear()
     
     # Get or create user in database
-    session = Session()
+    session = sync_session()
     try:
         user = session.query(User).filter(User.telegram_id == message.from_user.id).first()
         
@@ -77,7 +77,7 @@ async def language_selection(message: types.Message):
         return
         
     # Update user language in database
-    session = Session()
+    session = sync_session()
     try:
         user = session.query(User).filter(User.telegram_id == message.from_user.id).first()
         
@@ -134,7 +134,7 @@ async def cmd_help(message: types.Message):
     Handle /help command.
     """
     # Get user language
-    session = Session()
+    session = sync_session()
     try:
         user = session.query(User).filter(User.telegram_id == message.from_user.id).first()
         language = user.language if user else 'en'
@@ -185,7 +185,7 @@ async def text_handler(message: types.Message):
     Handle text messages for main menu buttons.
     """
     # Get user language
-    session = Session()
+    session = sync_session()
     try:
         user = session.query(User).filter(User.telegram_id == message.from_user.id).first()
         language = user.language if user else 'en'

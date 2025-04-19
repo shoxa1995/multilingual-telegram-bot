@@ -26,7 +26,12 @@ if USING_ASYNC:
 else:
     # Use synchronous engine as fallback
     engine = create_engine(DB_URL, echo=True)
-    sync_session = sessionmaker(engine, expire_on_commit=False)
+    sync_session_factory = sessionmaker(engine, expire_on_commit=False)
+    
+    # Create a session function that can be imported and used directly
+    def sync_session():
+        """Create a new synchronous SQLAlchemy session"""
+        return sync_session_factory()
 
 
 class User(Base):
