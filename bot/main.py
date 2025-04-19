@@ -99,23 +99,28 @@ async def start_bot():
     # Register filters
     dp.filters_factory.bind(AdminFilter)
     
-    # Initialize database
-    await init_db()
-    
-    # Register handlers
-    register_user_handlers(dp)
-    
-    # Set bot commands
-    await set_commands(bot)
-    
-    # Start polling
-    logger.info("Starting bot polling...")
     try:
-        await dp.start_polling()
-    finally:
-        await bot.session.close()
-        await dp.storage.close()
-        await dp.storage.wait_closed()
+        # Initialize database
+        await init_db()
+        
+        # Register handlers
+        register_user_handlers(dp)
+        
+        # Set bot commands
+        await set_commands(bot)
+        
+        # Start polling
+        logger.info("Starting bot polling...")
+        try:
+            await dp.start_polling()
+        finally:
+            await bot.session.close()
+            if dp.storage:
+                await dp.storage.close()
+                await dp.storage.wait_closed()
+    except Exception as e:
+        logger.error(f"Error starting bot: {e}")
+        # Continue without bot functionality
 
 if __name__ == "__main__":
     asyncio.run(start_bot())

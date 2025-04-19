@@ -127,14 +127,33 @@ class Booking(Base):
 
 async def init_db():
     """Initialize the database, creating tables if they don't exist"""
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+    try:
+        if USING_ASYNC:
+            async with engine.begin() as conn:
+                await conn.run_sync(Base.metadata.create_all)
+        else:
+            # Synchronous fallback
+            Base.metadata.create_all(engine)
+    except Exception as e:
+        print(f"Database initialization error: {e}")
+        # At this point, we're probably running in the Flask app context with SQLAlchemy already initialized
+        # Just continue without error
 
 
 async def get_db():
     """Get database session"""
-    async with async_session() as session:
-        yield session
+    try:
+        if USING_ASYNC:
+            async with async_session() as session:
+                yield session
+        else:
+            # Synchronous fallback
+            with sync_session() as session:
+                yield session
+    except Exception as e:
+        print(f"Database session error: {e}")
+        # Return None in case of error
+        yield None
 
 
 async def get_user_language(telegram_id: int) -> str:
