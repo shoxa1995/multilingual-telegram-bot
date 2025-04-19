@@ -1,50 +1,35 @@
 #!/bin/bash
 # Script to run the persistent Telegram bot
 
-# First, stop any running bots
+# First, stop any existing bots
 echo "Stopping any running bot processes..."
+pkill -f "direct_telegram_bot.py" || echo "No direct_telegram_bot.py process found"
+pkill -f "telegram_bot_workflow.py" || echo "No telegram_bot_workflow.py process found"
 pkill -f "persistent_bot.py" || echo "No persistent_bot.py process found"
 pkill -f "ultra_simple_bot.py" || echo "No ultra_simple_bot.py process found"
 sleep 2
 
-# Start the persistent bot
-echo "Starting persistent Telegram bot..."
-nohup python persistent_bot.py > persistent_bot_output.log 2>&1 &
+# Make the script executable
+chmod +x persistent_bot.py
+
+# Make BOT_TOKEN available in environment
+export BOT_TOKEN=$(grep BOT_TOKEN .replit.secrets | cut -d= -f2) || echo "No BOT_TOKEN found"
+
+# Start the bot in the background
+echo "Starting persistent Telegram bot with direct access to BOT_TOKEN..."
+nohup python persistent_bot.py > persistent_bot_direct.log 2>&1 &
 BOT_PID=$!
-echo "Started persistent bot with PID $BOT_PID"
+echo "Started bot with PID $BOT_PID"
 
-# Create a heartbeat monitor in the background
-cat > bot_monitor.sh << 'MONITOR'
-#!/bin/bash
-# Bot heartbeat monitor - restarts the bot if it dies
+# Save PID for future use
+echo $BOT_PID > persistent_bot.pid
 
-while true; do
-  if [ -f "bot_running.pid" ]; then
-    PID=$(cat bot_running.pid)
-    if ! ps -p $PID > /dev/null; then
-      echo "$(date) - Bot process died, restarting..." >> bot_monitor.log
-      ./run_persistent_bot.sh
-      sleep 10
-    fi
-  else
-    echo "$(date) - PID file not found, starting bot..." >> bot_monitor.log
-    ./run_persistent_bot.sh
-    sleep 10
-  fi
-  sleep 30
-done
-MONITOR
+echo "Persistent Telegram bot is now running"
+echo "You can message @gsbookingbot on Telegram"
+echo "To stop the bot: kill \$(cat persistent_bot.pid)"
+echo "To restart the bot: ./run_persistent_bot.sh"
 
-chmod +x bot_monitor.sh
-
-# Start the monitor
-nohup ./bot_monitor.sh > bot_monitor_output.log 2>&1 &
-MONITOR_PID=$!
-echo "Started bot monitor with PID $MONITOR_PID"
-
-echo "Persistent Telegram bot is now running with auto-restart capability"
-echo "Try messaging @gsbookingbot on Telegram"
-echo "The bot supports these commands:"
-echo "  /start - Start the bot"
-echo "  /help - Show help"
-echo "  /test - Test if the bot is responding"
+# Monitor the bot output for a few seconds
+echo -e "\nChecking initial bot output:"
+sleep 5
+tail -20 persistent_bot.log
