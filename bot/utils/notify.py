@@ -6,7 +6,7 @@ from datetime import datetime
 from typing import List, Optional
 
 from aiogram import Bot
-from aiogram.types import ParseMode
+from aiogram import enums
 
 from bot.config import ADMIN_IDS
 from bot.database import Session, Booking, User, Staff

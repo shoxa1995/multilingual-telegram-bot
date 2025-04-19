@@ -23,6 +23,23 @@ if USE_LIVE_PAYMENTS:
 
 logger = logging.getLogger(__name__)
 
+def generate_payment_link(booking_id: int, amount: int, description: str) -> str:
+    """
+    Legacy function for backward compatibility.
+    This is kept to maintain compatibility with existing code.
+    In the new implementation, we use Telegram's Payment API directly instead of external links.
+    
+    Args:
+        booking_id: Booking ID
+        amount: Payment amount in smallest currency unit
+        description: Payment description
+        
+    Returns:
+        A placeholder URL (should not be used)
+    """
+    logger.warning("generate_payment_link is deprecated. Use create_invoice instead.")
+    return f"https://t.me/your_bot?start=payment_{booking_id}"
+
 async def create_invoice(bot: Bot, chat_id: int, booking_id: int, amount: int, 
                    description: str, title: str = "Appointment Booking") -> Dict:
     """
