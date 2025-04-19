@@ -24,10 +24,11 @@ ZOOM_CLIENT_ID = os.getenv("ZOOM_CLIENT_ID")
 ZOOM_CLIENT_SECRET = os.getenv("ZOOM_CLIENT_SECRET")
 ZOOM_ACCOUNT_EMAIL = os.getenv("ZOOM_ACCOUNT_EMAIL")
 
-# Click.uz payment configuration
-CLICK_MERCHANT_ID = os.getenv("CLICK_MERCHANT_ID")
-CLICK_SERVICE_ID = os.getenv("CLICK_SERVICE_ID")
-CLICK_SECRET_KEY = os.getenv("CLICK_SECRET_KEY")
+# Click UZ payment provider tokens (from Telegram BotFather)
+CLICK_LIVE_TOKEN = os.getenv("CLICK_LIVE_TOKEN", "333605228:LIVE:18486_1A5B4FF440980100E5F5C1D745DFCB165C5E2A37")
+CLICK_TEST_TOKEN = os.getenv("CLICK_TEST_TOKEN", "398062629:TEST:999999999_F91D8F69C042267444B74CC0B3C747757EB0E065")
+# Use test token by default in development
+PAYMENT_PROVIDER_TOKEN = CLICK_TEST_TOKEN
 
 # Admin IDs (comma-separated list of Telegram user IDs)
 ADMIN_IDS = list(map(int, os.getenv("ADMIN_IDS", "").split(","))) if os.getenv("ADMIN_IDS") else []

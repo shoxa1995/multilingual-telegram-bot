@@ -3,16 +3,23 @@ Payment utilities for the Telegram bot.
 Handles Telegram payments integration with Click UZ.
 """
 import uuid
+import os
 from typing import Optional
 
 from aiogram import Bot
 from aiogram.types import LabeledPrice, ShippingOption
 
-from bot.config import CLICK_MERCHANT_ID, CLICK_SERVICE_ID, CLICK_SECRET_KEY
 from bot.database import (
     get_booking_by_id, get_staff_by_id, update_booking_payment_pending,
     update_booking_payment_completed
 )
+
+# Click UZ payment provider tokens from Telegram Bot Father
+CLICK_LIVE_TOKEN = os.environ.get("CLICK_LIVE_TOKEN", "333605228:LIVE:18486_1A5B4FF440980100E5F5C1D745DFCB165C5E2A37")
+CLICK_TEST_TOKEN = os.environ.get("CLICK_TEST_TOKEN", "398062629:TEST:999999999_F91D8F69C042267444B74CC0B3C747757EB0E065")
+
+# Use test token by default, can be configured to use live token in production
+PAYMENT_PROVIDER_TOKEN = CLICK_TEST_TOKEN
 
 
 async def create_invoice(bot: Bot, chat_id: int, booking_id: int) -> Optional[str]:
@@ -42,7 +49,7 @@ async def create_invoice(bot: Bot, chat_id: int, booking_id: int) -> Optional[st
         title=f"Booking with {staff.name}",
         description=f"Appointment on {booking_date_str} ({booking.duration_minutes} minutes)",
         payload=invoice_payload,
-        provider_token=CLICK_MERCHANT_ID,  # Click UZ merchant ID is used as the provider token
+        provider_token=PAYMENT_PROVIDER_TOKEN,  # Click UZ token from Bot Father
         currency="UZS",  # Uzbekistan Som
         prices=[
             LabeledPrice(
@@ -57,8 +64,7 @@ async def create_invoice(bot: Bot, chat_id: int, booking_id: int) -> Optional[st
         need_shipping_address=False,
         is_flexible=False,
         disable_notification=False,
-        protect_content=True,
-        provider_data=f'{{"service_id":"{CLICK_SERVICE_ID}"}}',  # Click UZ service ID
+        protect_content=True
     )
     
     # Update the booking to payment pending status

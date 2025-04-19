@@ -36,25 +36,30 @@ app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
 # Initialize database
 db = SQLAlchemy(app)
 
-# Placeholder for Telegram bot - commented out temporarily
+# Telegram bot functionality
 def start_telegram_bot():
-    logger.info("Telegram bot functionality temporarily disabled")
-    """
-    # This code will be enabled once all dependencies are installed correctly
-    logger.info("Starting Telegram bot in background thread")
-    import asyncio
-    from bot.main import start_bot
-    
-    # Run the bot
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
     try:
-        loop.run_until_complete(start_bot())
+        # Check if BOT_TOKEN is set
+        if not os.environ.get("BOT_TOKEN"):
+            logger.warning("BOT_TOKEN environment variable not set. Telegram bot will not start.")
+            return
+        
+        logger.info("Starting Telegram bot in background thread with Click UZ payment integration")
+        import asyncio
+        from bot.main import start_bot
+        
+        # Run the bot
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        try:
+            loop.run_until_complete(start_bot())
+        except Exception as e:
+            logger.error(f"Error starting Telegram bot: {e}")
+        finally:
+            loop.close()
     except Exception as e:
-        logger.error(f"Error starting Telegram bot: {e}")
-    finally:
-        loop.close()
-    """
+        logger.error(f"Failed to start Telegram bot: {e}")
+        logger.info("Telegram bot functionality temporarily disabled")
 
 # User model methods
 def set_password(self, password):
