@@ -262,7 +262,7 @@ def calendar_keyboard(staff_id: int, current_date: datetime = None) -> InlineKey
                     row.append(
                         InlineKeyboardButton(
                             text=f"{day}",
-                            callback_data=date_cb.new(
+                            callback_data=date_cb(
                                 year=year, month=month, day=day, action='select'
                             )
                         )
@@ -281,11 +281,11 @@ def calendar_keyboard(staff_id: int, current_date: datetime = None) -> InlineKey
     markup.row(
         InlineKeyboardButton(
             text=_('◀️ Previous'),
-            callback_data=navigation_cb.new(direction=f'prev:{staff_id}')
+            callback_data=navigation_cb(direction=f'prev:{staff_id}')
         ),
         InlineKeyboardButton(
             text=_('▶️ Next'),
-            callback_data=navigation_cb.new(direction=f'next:{staff_id}')
+            callback_data=navigation_cb(direction=f'next:{staff_id}')
         )
     )
     
@@ -293,7 +293,7 @@ def calendar_keyboard(staff_id: int, current_date: datetime = None) -> InlineKey
     markup.row(
         InlineKeyboardButton(
             text=_('⬅️ Back'),
-            callback_data=staff_cb.new(id=staff_id, action='select')
+            callback_data=staff_cb(id=staff_id, action='select')
         ),
         InlineKeyboardButton(
             text=_('❌ Cancel'),
@@ -341,7 +341,7 @@ def time_slots_keyboard(staff_id: int, year: int, month: int, day: int) -> Inlin
             markup.insert(
                 InlineKeyboardButton(
                     text=f"{hour:02d}:{minute:02d}",
-                    callback_data=time_cb.new(hour=hour, minute=minute, action='select')
+                    callback_data=time_cb(hour=hour, minute=minute, action='select')
                 )
             )
             
@@ -352,7 +352,7 @@ def time_slots_keyboard(staff_id: int, year: int, month: int, day: int) -> Inlin
     markup.row(
         InlineKeyboardButton(
             text=_('⬅️ Back'),
-            callback_data=date_cb.new(year=0, month=0, day=0, action='back')
+            callback_data=date_cb(year=0, month=0, day=0, action='back')
         ),
         InlineKeyboardButton(
             text=_('❌ Cancel'),
@@ -369,11 +369,11 @@ def confirmation_keyboard() -> InlineKeyboardMarkup:
     markup.row(
         InlineKeyboardButton(
             text=_('✅ Confirm'),
-            callback_data=confirm_cb.new(action='confirm')
+            callback_data=confirm_cb(action='confirm')
         ),
         InlineKeyboardButton(
             text=_('❌ Cancel'),
-            callback_data=confirm_cb.new(action='cancel')
+            callback_data=confirm_cb(action='cancel')
         )
     )
     
@@ -391,7 +391,7 @@ def my_bookings_keyboard(bookings: List[Booking]) -> InlineKeyboardMarkup:
         markup.add(
             InlineKeyboardButton(
                 text=f"{booking_time} - {staff_name}",
-                callback_data=booking_cb.new(id=booking.id, action='view')
+                callback_data=booking_cb(id=booking.id, action='view')
             )
         )
         
@@ -413,7 +413,7 @@ def booking_actions_keyboard(booking_id: int) -> InlineKeyboardMarkup:
     markup.add(
         InlineKeyboardButton(
             text=_('🔄 Reschedule'),
-            callback_data=booking_cb.new(id=booking_id, action='reschedule')
+            callback_data=booking_cb(id=booking_id, action='reschedule')
         )
     )
     
@@ -421,7 +421,7 @@ def booking_actions_keyboard(booking_id: int) -> InlineKeyboardMarkup:
     markup.add(
         InlineKeyboardButton(
             text=_('❌ Cancel Booking'),
-            callback_data=booking_cb.new(id=booking_id, action='cancel')
+            callback_data=booking_cb(id=booking_id, action='cancel')
         )
     )
     
@@ -429,7 +429,7 @@ def booking_actions_keyboard(booking_id: int) -> InlineKeyboardMarkup:
     markup.add(
         InlineKeyboardButton(
             text=_('⬅️ Back'),
-            callback_data=booking_cb.new(id=0, action='back')
+            callback_data=booking_cb(id=0, action='back')
         )
     )
     
@@ -442,11 +442,11 @@ def cancel_booking_confirmation_keyboard(booking_id: int) -> InlineKeyboardMarku
     markup.row(
         InlineKeyboardButton(
             text=_('✅ Yes, Cancel'),
-            callback_data=booking_cb.new(id=booking_id, action='confirm_cancel')
+            callback_data=booking_cb(id=booking_id, action='confirm_cancel')
         ),
         InlineKeyboardButton(
             text=_('🔙 No, Go Back'),
-            callback_data=booking_cb.new(id=booking_id, action='view')
+            callback_data=booking_cb(id=booking_id, action='view')
         )
     )
     

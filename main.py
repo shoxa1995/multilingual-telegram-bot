@@ -38,6 +38,11 @@ db = SQLAlchemy(app)
 
 # Telegram bot functionality
 def start_telegram_bot():
+    """
+    Initialize the Telegram bot but don't start polling.
+    In a Flask environment, it's better to run the bot using a separate script
+    like run_bot.py rather than trying to poll from within the Flask application.
+    """
     # First check if bot should be disabled via environment variable
     if os.environ.get("DISABLE_TELEGRAM_BOT"):
         logger.info("Telegram bot disabled via environment variable")
@@ -55,10 +60,13 @@ def start_telegram_bot():
         
         # Just initialize the bot without running it
         # This ensures all components are compatible with aiogram 3.x
-        # but avoids the threading issue with set_wakeup_fd
+        # but avoids the threading issues with event loops in Flask
         try:
-            initialize_bot()
-            logger.info("Bot initialized successfully")
+            if initialize_bot():
+                logger.info("Bot initialized successfully")
+            else:
+                logger.error("Bot initialization failed")
+                os.environ["DISABLE_TELEGRAM_BOT"] = "1"
         except Exception as e:
             logger.error(f"Error initializing Telegram bot: {e}")
             # Set environment variable to prevent future attempts
