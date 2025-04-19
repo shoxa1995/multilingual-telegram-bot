@@ -98,6 +98,11 @@ def initialize_bot():
         logger.info("Bot disabled via environment variable")
         return False
     
+    # Check if BOT_TOKEN is set
+    if not BOT_TOKEN:
+        logger.warning("BOT_TOKEN environment variable not set. Telegram bot will not start.")
+        return False
+    
     # Import database configuration
     from bot.database import init_db
     
@@ -106,6 +111,12 @@ def initialize_bot():
         # Run initialization code
         asyncio.run(init_db())
         logger.info("Bot database initialized successfully")
+        
+        # Load i18n middleware
+        from bot.middlewares.i18n import setup_middleware
+        setup_middleware()
+        
+        # Initialize but don't start the bot
         return True
     except Exception as e:
         logger.error(f"Error initializing bot database: {e}")
@@ -120,17 +131,14 @@ async def start_bot():
         
     # Initialize bot and dispatcher with aiogram 3.x style
     try:
-        # Import DefaultBotProperties for aiogram 3.7.0+
-        from aiogram.client.default import DefaultBotProperties
-        
-        # Initialize bot with proper syntax for aiogram 3.7.0+
-        bot = Bot(token=BOT_TOKEN, default=DefaultBotProperties(parse_mode=enums.ParseMode.HTML))
+        # Bot initialization with proper syntax for aiogram 3.x
+        bot = Bot(token=BOT_TOKEN, parse_mode=enums.ParseMode.HTML)
         
         # Use Memory storage for states
         storage = MemoryStorage()
         
         # Dispatcher initialization for aiogram 3.x
-        dp = Dispatcher()
+        dp = Dispatcher(storage=storage)
         
         # Initialize database
         await init_db()
@@ -145,10 +153,11 @@ async def start_bot():
         # Start polling in aiogram 3.x
         logger.info("Starting bot polling...")
         try:
-            await dp.start_polling(bot, storage=storage)
+            await dp.start_polling(bot)
         finally:
-            # Bot session closes automatically
-            pass
+            await dp.storage.close()
+            await bot.session.close()
+            logger.info("Bot session closed")
             
     except Exception as e:
         logger.error(f"Error starting bot: {e}")

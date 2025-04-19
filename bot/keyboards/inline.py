@@ -48,12 +48,32 @@ class ConfirmCallbackFactory(CallbackData, prefix="confirm"):
 
 # For backward compatibility, we'll keep these simple aliases
 # Note: in aiogram 3.x, we don't initialize these directly, we'll use them as classes
-staff_cb = StaffCallbackFactory
-date_cb = DateCallbackFactory
-time_cb = TimeCallbackFactory
-booking_cb = BookingCallbackFactory
-navigation_cb = NavigationCallbackFactory
-confirm_cb = ConfirmCallbackFactory
+# In aiogram 3.x, we use these factories differently
+# For backward compatibility with the existing code, we'll create helper functions
+
+def staff_cb(id: int, action: str = "select"):
+    """Helper function for aiogram 3.x callback data creation"""
+    return StaffCallbackFactory(id=id, action=action).pack()
+    
+def date_cb(year: int, month: int, day: int, action: str = "select"):
+    """Helper function for aiogram 3.x callback data creation"""
+    return DateCallbackFactory(year=year, month=month, day=day, action=action).pack()
+    
+def time_cb(hour: int, minute: int, action: str = "select"):
+    """Helper function for aiogram 3.x callback data creation"""
+    return TimeCallbackFactory(hour=hour, minute=minute, action=action).pack()
+    
+def booking_cb(id: int, action: str):
+    """Helper function for aiogram 3.x callback data creation"""
+    return BookingCallbackFactory(id=id, action=action).pack()
+    
+def navigation_cb(direction: str):
+    """Helper function for aiogram 3.x callback data creation"""
+    return NavigationCallbackFactory(direction=direction).pack()
+    
+def confirm_cb(action: str):
+    """Helper function for aiogram 3.x callback data creation"""
+    return ConfirmCallbackFactory(action=action).pack()
 
 def staff_selection_keyboard() -> InlineKeyboardMarkup:
     """Create a keyboard with staff members to select from."""
@@ -68,7 +88,7 @@ def staff_selection_keyboard() -> InlineKeyboardMarkup:
             markup.add(
                 InlineKeyboardButton(
                     text=staff.name,
-                    callback_data=staff_cb.new(id=staff.id, action='select')
+                    callback_data=staff_cb(id=staff.id, action='select')
                 )
             )
             
@@ -93,7 +113,7 @@ def staff_profile_keyboard(staff_id: int) -> InlineKeyboardMarkup:
     markup.add(
         InlineKeyboardButton(
             text=_('📅 Book Appointment'),
-            callback_data=staff_cb.new(id=staff_id, action='book')
+            callback_data=staff_cb(id=staff_id, action='book')
         )
     )
     

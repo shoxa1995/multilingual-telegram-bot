@@ -117,9 +117,17 @@ async def get_user_language(user):
     return DEFAULT_LANGUAGE
 
 
-def setup_middleware(dp):
+def setup_middleware(dp=None):
     """
     Placeholder for middleware setup to maintain API compatibility.
+    
+    In aiogram 3.x, middleware is registered differently, so we keep this 
+    function just for API compatibility. We make the dp parameter optional
+    to allow calling this function without a dispatcher during initialization.
     """
-    # No middleware is used, but we keep this function for API compatibility
-    pass
+    # No middleware is used in the current implementation
+    # Just initialize translations to ensure they're available
+    for lang in LANGUAGES.keys():
+        get_translation(lang)
+    
+    return True
