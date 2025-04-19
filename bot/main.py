@@ -81,6 +81,25 @@ from bot.handlers.users import register_user_handlers
 
 logger = logging.getLogger(__name__)
 
+# Global bot instance
+_bot = None
+
+# Helper to access the bot instance
+def get_bot():
+    """Get the global bot instance"""
+    global _bot
+    return _bot
+
+# Export the bot for external modules
+bot = None
+def setup_bot_export():
+    """
+    Update the exported bot variable for other modules to use.
+    This function should be called after the bot is initialized.
+    """
+    global bot, _bot
+    bot = _bot
+
 async def set_commands(bot: Bot):
     """Set bot commands in menu"""
     commands = [
@@ -122,6 +141,25 @@ def initialize_bot():
         from bot.middlewares.i18n import setup_middleware
         setup_middleware()
         
+        # Create the bot instance for later use
+        try:
+            # Bot initialization with DefaultBotProperties for aiogram 3.7.0+
+            from aiogram.client.default import DefaultBotProperties
+            default_bot_properties = DefaultBotProperties(parse_mode=enums.ParseMode.HTML)
+            bot = Bot(token=BOT_TOKEN, default=default_bot_properties)
+            
+            # Make the bot available globally
+            global _bot
+            _bot = bot
+            
+            # Update the exported bot for other modules
+            setup_bot_export()
+            
+            logger.info("Bot instance created successfully")
+        except Exception as e:
+            logger.error(f"Error creating bot instance: {e}")
+            return False
+        
         # Initialize but don't start the bot
         return True
     except Exception as e:
@@ -141,10 +179,17 @@ async def start_bot():
         default_bot_properties = DefaultBotProperties(parse_mode=enums.ParseMode.HTML)
         bot = Bot(token=BOT_TOKEN, default=default_bot_properties)
         
+        # Make the bot available globally for other parts of the application
+        global _bot
+        _bot = bot
+        
+        # Update the exported bot for other modules
+        setup_bot_export()
+        
         # Use Memory storage for states
         storage = MemoryStorage()
         
-        # Dispatcher initialization for aiogram 3.x with bot instance
+        # Dispatcher initialization for aiogram 3.x
         dp = Dispatcher(storage=storage)
         
         # Initialize database
