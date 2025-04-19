@@ -110,8 +110,9 @@ async def start_bot():
         # Initialize database
         await init_db()
         
-        # Register all handlers
-        # register_user_handlers(dp)
+        # Register all handlers using the new router approach in aiogram 3.x
+        from bot.handlers import get_all_routers
+        dp.include_router(get_all_routers())
         
         # Set bot commands
         await set_commands(bot)
