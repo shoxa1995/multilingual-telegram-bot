@@ -43,9 +43,9 @@ def sync_session():
     return sync_session_factory()
 
 
-class User(Base):
+class TelegramUser(Base):
     """User model to store Telegram user information"""
-    __tablename__ = 'users'
+    __tablename__ = 'telegram_users'
 
     id = Column(Integer, primary_key=True)
     telegram_id = Column(Integer, unique=True, nullable=False)
@@ -60,7 +60,7 @@ class User(Base):
     bookings = relationship("Booking", back_populates="user")
 
     def __repr__(self):
-        return f"<User(id={self.id}, telegram_id={self.telegram_id}, username={self.username})>"
+        return f"<TelegramUser(id={self.id}, telegram_id={self.telegram_id}, username={self.username})>"
 
 
 class Staff(Base):
@@ -117,7 +117,7 @@ class Booking(Base):
     __tablename__ = 'bookings'
 
     id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
+    user_id = Column(Integer, ForeignKey('telegram_users.id'), nullable=False)
     staff_id = Column(Integer, ForeignKey('staff.id'), nullable=False)
     booking_date = Column(DateTime, nullable=False)
     duration_minutes = Column(Integer, default=30)
@@ -132,7 +132,7 @@ class Booking(Base):
     created_at = Column(DateTime, server_default=func.now())
     updated_at = Column(DateTime, onupdate=func.now())
 
-    user = relationship("User", back_populates="bookings")
+    user = relationship("TelegramUser", back_populates="bookings")
     staff = relationship("Staff", back_populates="bookings")
 
     def __repr__(self):
@@ -178,7 +178,7 @@ async def get_db_async():
 def get_user_language(telegram_id: int) -> str:
     """Get user language from the database (synchronous version)"""
     with sync_session() as session:
-        query = select(User.language).where(User.telegram_id == telegram_id)
+        query = select(TelegramUser.language).where(TelegramUser.telegram_id == telegram_id)
         result = session.execute(query)
         language = result.scalar_one_or_none()
         return language
@@ -191,13 +191,13 @@ def get_or_create_user(user_data):
     """Get or create a user from Telegram user data (synchronous version)"""
     with sync_session() as session:
         # Check if user exists
-        query = select(User).where(User.telegram_id == user_data.id)
+        query = select(TelegramUser).where(TelegramUser.telegram_id == user_data.id)
         result = session.execute(query)
         user = result.scalar_one_or_none()
         
         if not user:
             # Create new user
-            user = User(
+            user = TelegramUser(
                 telegram_id=user_data.id,
                 first_name=user_data.first_name,
                 last_name=user_data.last_name,
@@ -214,7 +214,7 @@ def get_or_create_user(user_data):
 def update_user_language(telegram_id: int, language: str):
     """Update user language in the database (synchronous version)"""
     with sync_session() as session:
-        query = select(User).where(User.telegram_id == telegram_id)
+        query = select(TelegramUser).where(TelegramUser.telegram_id == telegram_id)
         result = session.execute(query)
         user = result.scalar_one_or_none()
         
@@ -302,7 +302,7 @@ def create_booking(user_id: int, staff_id: int, booking_date: datetime, duration
 def get_user_bookings(telegram_id: int):
     """Get all bookings for a user (synchronous version)"""
     with sync_session() as session:
-        user_query = select(User).where(User.telegram_id == telegram_id)
+        user_query = select(TelegramUser).where(TelegramUser.telegram_id == telegram_id)
         user_result = session.execute(user_query)
         user = user_result.scalar_one_or_none()
         
