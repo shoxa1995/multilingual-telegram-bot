@@ -4,6 +4,7 @@ Initializes and starts the bot with all required handlers and middlewares.
 """
 import asyncio
 import logging
+import os
 try:
     from aiogram import Bot, Dispatcher
     from aiogram.dispatcher.storage import MemoryStorage
@@ -86,6 +87,11 @@ async def set_commands(bot: Bot):
 
 async def start_bot():
     """Initialize and start the bot"""
+    # Check if bot should be disabled
+    if os.environ.get("DISABLE_TELEGRAM_BOT"):
+        logger.info("Telegram bot disabled via environment variable")
+        return
+        
     # Initialize bot and dispatcher
     bot = Bot(token=BOT_TOKEN, parse_mode=ParseMode.HTML)
     
@@ -120,6 +126,8 @@ async def start_bot():
                 await dp.storage.wait_closed()
     except Exception as e:
         logger.error(f"Error starting bot: {e}")
+        logger.info("Setting DISABLE_TELEGRAM_BOT=1 in environment to prevent future attempts")
+        os.environ["DISABLE_TELEGRAM_BOT"] = "1"
         # Continue without bot functionality
 
 if __name__ == "__main__":

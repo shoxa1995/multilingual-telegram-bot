@@ -14,7 +14,14 @@ REDIS_PORT = int(os.getenv("REDIS_PORT", 6379))
 REDIS_DB = int(os.getenv("REDIS_DB", 0))
 
 # Database configuration
-DB_URL = os.getenv("DATABASE_URL", "sqlite:///booking.db")
+# Get standard DATABASE_URL from environment and convert to async-compatible format if needed
+raw_db_url = os.getenv("DATABASE_URL", "sqlite:///booking.db")
+# If using PostgreSQL, ensure we're using the async driver
+if raw_db_url and raw_db_url.startswith("postgresql"):
+    # Replace postgresql:// with postgresql+asyncpg:// to use asyncpg driver
+    DB_URL = raw_db_url.replace("postgresql://", "postgresql+asyncpg://")
+else:
+    DB_URL = raw_db_url
 
 # Bitrix24 API configuration
 BITRIX24_WEBHOOK_URL = os.getenv("BITRIX24_WEBHOOK_URL")
