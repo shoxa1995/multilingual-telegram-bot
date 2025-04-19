@@ -182,7 +182,7 @@ async def check_payment_status(booking_id: int) -> str:
         booking_id: Booking ID to check
         
     Returns:
-        Status string: "paid", "pending", or "failed"
+        Status string: "paid", "pending", "refunded" or "failed"
     """
     try:
         from bot.database import get_booking_by_id_async
@@ -203,9 +203,63 @@ async def check_payment_status(booking_id: int) -> str:
             return "paid"
         elif booking.status == "payment_pending":
             return "pending"
+        elif booking.status == "cancelled" and booking.payment_id:
+            # If there's a payment ID but status is cancelled, it was likely refunded
+            return "refunded"
         else:
             return "failed"
             
     except Exception as e:
         logger.exception(f"Error checking payment status for booking {booking_id}: {e}")
         return "failed"
+        
+async def process_refund(bot: Bot, booking_id: int) -> bool:
+    """
+    Process a refund for a booking.
+    Note: Telegram doesn't provide direct API for refunds, so this function
+    marks the booking as cancelled and records the refund in the database.
+    For actual refunds, an admin must process them manually in the payment provider's dashboard.
+    
+    Args:
+        bot: Telegram Bot instance
+        booking_id: Booking ID to refund
+        
+    Returns:
+        True if successful, False otherwise
+    """
+    try:
+        from bot.database import get_booking_by_id_async, update_booking_status_async
+        from bot.models import BookingStatus
+        
+        # Get booking details
+        booking = await get_booking_by_id_async(booking_id)
+        if not booking:
+            logger.error(f"Booking not found for refund: {booking_id}")
+            return False
+            
+        # Check if booking has been paid
+        if booking.status != BookingStatus.CONFIRMED or not booking.payment_id:
+            logger.error(f"Cannot refund unpaid booking: {booking_id}")
+            return False
+            
+        # Mark booking as cancelled (refunded)
+        success = await update_booking_status_async(booking_id, BookingStatus.CANCELLED)
+        if not success:
+            logger.error(f"Failed to update booking status for refund: {booking_id}")
+            return False
+            
+        # Notify user about refund
+        try:
+            await bot.send_message(
+                chat_id=booking.user.telegram_id,
+                text=f"Your booking #{booking_id} has been refunded. The amount will be credited back to your payment method according to your bank's processing time."
+            )
+        except Exception as e:
+            logger.warning(f"Error notifying user about refund: {e}")
+            # Continue even if notification fails
+            
+        logger.info(f"Refund processed for booking {booking_id}")
+        return True
+    except Exception as e:
+        logger.exception(f"Error processing refund: {e}")
+        return False
