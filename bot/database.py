@@ -142,49 +142,54 @@ class Booking(Base):
 async def init_db():
     """Initialize the database, creating tables if they don't exist"""
     try:
-        if USING_ASYNC:
-            async with engine.begin() as conn:
-                await conn.run_sync(Base.metadata.create_all)
-        else:
-            # Synchronous fallback
-            Base.metadata.create_all(engine)
+        # In aiogram 3.x migration, we're only using synchronous approach
+        Base.metadata.create_all(engine)
+        return True
     except Exception as e:
         print(f"Database initialization error: {e}")
         # At this point, we're probably running in the Flask app context with SQLAlchemy already initialized
         # Just continue without error
+        return False
 
 
-async def get_db():
-    """Get database session"""
+def get_db():
+    """Get database session (synchronous version)"""
     try:
-        if USING_ASYNC:
-            async with async_session() as session:
-                yield session
-        else:
-            # Synchronous fallback
-            with sync_session() as session:
-                yield session
+        # Only use synchronous sessions for simplicity during migration
+        return sync_session()
+    except Exception as e:
+        print(f"Database session error: {e}")
+        return None
+
+
+async def get_db_async():
+    """Get database session (async-compatible wrapper)"""
+    try:
+        # Return a synchronous session, but in an async-compatible way
+        session = sync_session()
+        yield session
+        session.close()
     except Exception as e:
         print(f"Database session error: {e}")
         # Return None in case of error
         yield None
 
 
-async def get_user_language(telegram_id: int) -> str:
-    """Get user language from the database"""
-    async with async_session() as session:
+def get_user_language(telegram_id: int) -> str:
+    """Get user language from the database (synchronous version)"""
+    with sync_session() as session:
         query = select(User.language).where(User.telegram_id == telegram_id)
-        result = await session.execute(query)
+        result = session.execute(query)
         language = result.scalar_one_or_none()
         return language
 
 
-async def get_or_create_user(user_data):
-    """Get or create a user from Telegram user data"""
-    async with async_session() as session:
+def get_or_create_user(user_data):
+    """Get or create a user from Telegram user data (synchronous version)"""
+    with sync_session() as session:
         # Check if user exists
         query = select(User).where(User.telegram_id == user_data.id)
-        result = await session.execute(query)
+        result = session.execute(query)
         user = result.scalar_one_or_none()
         
         if not user:
@@ -197,54 +202,86 @@ async def get_or_create_user(user_data):
                 language=user_data.language_code if user_data.language_code in ('en', 'ru', 'uz') else 'en'
             )
             session.add(user)
-            await session.commit()
-            await session.refresh(user)
+            session.commit()
+            session.refresh(user)
         
         return user
 
 
-async def update_user_language(telegram_id: int, language: str):
-    """Update user language in the database"""
-    async with async_session() as session:
+def update_user_language(telegram_id: int, language: str):
+    """Update user language in the database (synchronous version)"""
+    with sync_session() as session:
         query = select(User).where(User.telegram_id == telegram_id)
-        result = await session.execute(query)
+        result = session.execute(query)
         user = result.scalar_one_or_none()
         
         if user:
             user.language = language
-            await session.commit()
+            session.commit()
             return True
         
         return False
+        
+        
+# Async wrappers for backward compatibility
+async def get_user_language_async(telegram_id: int) -> str:
+    """Async wrapper for get_user_language"""
+    return get_user_language(telegram_id)
+    
+    
+async def get_or_create_user_async(user_data):
+    """Async wrapper for get_or_create_user"""
+    return get_or_create_user(user_data)
+    
+    
+async def update_user_language_async(telegram_id: int, language: str):
+    """Async wrapper for update_user_language"""
+    return update_user_language(telegram_id, language)
 
 
-async def get_active_staff():
-    """Get all active staff members"""
-    async with async_session() as session:
+def get_active_staff():
+    """Get all active staff members (synchronous version)"""
+    with sync_session() as session:
         query = select(Staff).where(Staff.is_active == True)
-        result = await session.execute(query)
+        result = session.execute(query)
         return result.scalars().all()
 
 
-async def get_staff_by_id(staff_id: int):
-    """Get staff by ID"""
-    async with async_session() as session:
+def get_staff_by_id(staff_id: int):
+    """Get staff by ID (synchronous version)"""
+    with sync_session() as session:
         query = select(Staff).where(Staff.id == staff_id)
-        result = await session.execute(query)
+        result = session.execute(query)
         return result.scalar_one_or_none()
 
 
-async def get_staff_schedule(staff_id: int):
-    """Get staff schedule"""
-    async with async_session() as session:
+def get_staff_schedule(staff_id: int):
+    """Get staff schedule (synchronous version)"""
+    with sync_session() as session:
         query = select(StaffSchedule).where(StaffSchedule.staff_id == staff_id)
-        result = await session.execute(query)
+        result = session.execute(query)
         return result.scalars().all()
+        
+        
+# Async wrappers for backward compatibility
+async def get_active_staff_async():
+    """Async wrapper for get_active_staff"""
+    return get_active_staff()
+    
+    
+async def get_staff_by_id_async(staff_id: int):
+    """Async wrapper for get_staff_by_id"""
+    return get_staff_by_id(staff_id)
+    
+    
+async def get_staff_schedule_async(staff_id: int):
+    """Async wrapper for get_staff_schedule"""
+    return get_staff_schedule(staff_id)
 
 
-async def create_booking(user_id: int, staff_id: int, booking_date: datetime, duration_minutes: int = 30, price: int = 0):
-    """Create a new booking"""
-    async with async_session() as session:
+def create_booking(user_id: int, staff_id: int, booking_date: datetime, duration_minutes: int = 30, price: int = 0):
+    """Create a new booking (synchronous version)"""
+    with sync_session() as session:
         booking = Booking(
             user_id=user_id,
             staff_id=staff_id,
@@ -254,16 +291,16 @@ async def create_booking(user_id: int, staff_id: int, booking_date: datetime, du
             price=price
         )
         session.add(booking)
-        await session.commit()
-        await session.refresh(booking)
+        session.commit()
+        session.refresh(booking)
         return booking
 
 
-async def get_user_bookings(telegram_id: int):
-    """Get all bookings for a user"""
-    async with async_session() as session:
+def get_user_bookings(telegram_id: int):
+    """Get all bookings for a user (synchronous version)"""
+    with sync_session() as session:
         user_query = select(User).where(User.telegram_id == telegram_id)
-        user_result = await session.execute(user_query)
+        user_result = session.execute(user_query)
         user = user_result.scalar_one_or_none()
         
         if not user:
@@ -274,60 +311,92 @@ async def get_user_bookings(telegram_id: int):
             .where(Booking.user_id == user.id)
             .order_by(Booking.booking_date.desc())
         )
-        booking_result = await session.execute(booking_query)
+        booking_result = session.execute(booking_query)
         return booking_result.scalars().all()
 
 
-async def get_booking_by_id(booking_id: int):
-    """Get booking by ID"""
-    async with async_session() as session:
+def get_booking_by_id(booking_id: int):
+    """Get booking by ID (synchronous version)"""
+    with sync_session() as session:
         query = select(Booking).where(Booking.id == booking_id)
-        result = await session.execute(query)
+        result = session.execute(query)
         return result.scalar_one_or_none()
+        
+        
+# Async wrappers for backward compatibility
+async def create_booking_async(user_id: int, staff_id: int, booking_date: datetime, duration_minutes: int = 30, price: int = 0):
+    """Async wrapper for create_booking"""
+    return create_booking(user_id, staff_id, booking_date, duration_minutes, price)
+    
+    
+async def get_user_bookings_async(telegram_id: int):
+    """Async wrapper for get_user_bookings"""
+    return get_user_bookings(telegram_id)
+    
+    
+async def get_booking_by_id_async(booking_id: int):
+    """Async wrapper for get_booking_by_id"""
+    return get_booking_by_id(booking_id)
 
 
-async def update_booking_payment_pending(booking_id: int, invoice_payload: str):
-    """Update booking to payment pending status"""
-    async with async_session() as session:
+def update_booking_payment_pending(booking_id: int, invoice_payload: str):
+    """Update booking to payment pending status (synchronous version)"""
+    with sync_session() as session:
         query = select(Booking).where(Booking.id == booking_id)
-        result = await session.execute(query)
+        result = session.execute(query)
         booking = result.scalar_one_or_none()
         
         if booking:
             booking.status = BookingStatus.PAYMENT_PENDING
             booking.invoice_payload = invoice_payload
-            await session.commit()
+            session.commit()
             return True
         
         return False
 
 
-async def update_booking_payment_completed(booking_id: int, payment_id: str):
-    """Update booking after successful payment"""
-    async with async_session() as session:
+def update_booking_payment_completed(booking_id: int, payment_id: str):
+    """Update booking after successful payment (synchronous version)"""
+    with sync_session() as session:
         query = select(Booking).where(Booking.id == booking_id)
-        result = await session.execute(query)
+        result = session.execute(query)
         booking = result.scalar_one_or_none()
         
         if booking:
             booking.status = BookingStatus.CONFIRMED
             booking.payment_id = payment_id
-            await session.commit()
+            session.commit()
             return True
         
         return False
 
 
-async def cancel_booking(booking_id: int):
-    """Cancel a booking"""
-    async with async_session() as session:
+def cancel_booking(booking_id: int):
+    """Cancel a booking (synchronous version)"""
+    with sync_session() as session:
         query = select(Booking).where(Booking.id == booking_id)
-        result = await session.execute(query)
+        result = session.execute(query)
         booking = result.scalar_one_or_none()
         
         if booking:
             booking.status = BookingStatus.CANCELLED
-            await session.commit()
+            session.commit()
             return True
         
         return False
+        
+        
+# Async wrappers for backward compatibility
+async def update_booking_payment_pending_async(booking_id: int, invoice_payload: str):
+    """Async wrapper for update_booking_payment_pending"""
+    return update_booking_payment_pending(booking_id, invoice_payload)
+    
+    
+async def update_booking_payment_completed_async(booking_id: int, payment_id: str):
+    """Async wrapper for update_booking_payment_completed"""
+    return update_booking_payment_completed(booking_id, payment_id)
+    
+    
+async def cancel_booking_async(booking_id: int):
+    """Async wrapper for cancel_booking"""
+    return cancel_booking(booking_id)
