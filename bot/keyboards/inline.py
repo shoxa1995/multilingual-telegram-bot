@@ -7,25 +7,51 @@ from typing import List, Dict, Union, Optional
 from datetime import datetime, timedelta
 
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
-from aiogram.utils.callback_data import CallbackData
+from aiogram.filters.callback_data import CallbackData
 
 from bot.middlewares.i18n import _
-from bot.database import Session, Staff, Booking, StaffSchedule, BookingStatus
+from bot.database import sync_session, Staff, Booking, StaffSchedule, BookingStatus
 from bot.utils.calendar import get_available_slots
 
-# Define callback data patterns
-staff_cb = CallbackData('staff', 'id', 'action')
-date_cb = CallbackData('date', 'year', 'month', 'day', 'action')
-time_cb = CallbackData('time', 'hour', 'minute', 'action')
-booking_cb = CallbackData('booking', 'id', 'action')
-navigation_cb = CallbackData('nav', 'direction')
-confirm_cb = CallbackData('confirm', 'action')
+# Define callback data patterns - updated for aiogram 3.x
+class StaffCallbackFactory(CallbackData, prefix="staff"):
+    id: int
+    action: str = "select"
+
+class DateCallbackFactory(CallbackData, prefix="date"):
+    year: int
+    month: int
+    day: int
+    action: str = "select"
+
+class TimeCallbackFactory(CallbackData, prefix="time"):
+    hour: int
+    minute: int
+    action: str = "select"
+
+class BookingCallbackFactory(CallbackData, prefix="booking"):
+    id: int
+    action: str
+
+class NavigationCallbackFactory(CallbackData, prefix="nav"):
+    direction: str
+
+class ConfirmCallbackFactory(CallbackData, prefix="confirm"):
+    action: str
+
+# Create instances for easier access
+staff_cb = StaffCallbackFactory()
+date_cb = DateCallbackFactory()
+time_cb = TimeCallbackFactory()
+booking_cb = BookingCallbackFactory()
+navigation_cb = NavigationCallbackFactory()
+confirm_cb = ConfirmCallbackFactory()
 
 def staff_selection_keyboard() -> InlineKeyboardMarkup:
     """Create a keyboard with staff members to select from."""
     markup = InlineKeyboardMarkup(row_width=1)
     
-    session = Session()
+    session = sync_session()
     try:
         # Get all active staff members
         staff_members = session.query(Staff).filter(Staff.is_active == True).all()
