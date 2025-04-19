@@ -1,2 +1,14 @@
-SQLAlchemy==2.0.40
-typing_extensions==4.13.2
+aiogram==3.4
+aiohttp
+asyncpg
+fastapi
+flask
+flask_sqlalchemy
+jinja2
+python-jose
+python-dotenv
+passlib
+psycopg2-binary
+sqlalchemy==2.0.40
+uvicorn
+werkzeug
