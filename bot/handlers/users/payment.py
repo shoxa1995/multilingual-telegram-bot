@@ -129,6 +129,8 @@ async def successful_payment_handler(message: Message, state: FSMContext):
                     name=f"Appointment: {booking.user.first_name or 'Client'} - {booking.staff.name}",
                     start_time=booking.booking_date,
                     duration_minutes=booking.duration_minutes,
+                    phone=booking.user.phone_number if hasattr(booking.user, 'phone_number') else None,
+                    zoom_link=booking.zoom_join_url if booking.zoom_join_url else None,
                     responsible_id=booking.staff.bitrix_user_id if booking.staff.bitrix_user_id else None
                 )
                 

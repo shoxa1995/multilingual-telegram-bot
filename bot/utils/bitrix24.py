@@ -17,8 +17,9 @@ async def create_bitrix_event(
     start_time: datetime,
     duration_minutes: int,
     phone: Optional[str] = None,
-    zoom_link: Optional[str] = None
-) -> Optional[str]:
+    zoom_link: Optional[str] = None,
+    responsible_id: Optional[str] = None
+) -> Optional[Dict[str, Any]]:
     """
     Create a calendar event in Bitrix24.
     
@@ -29,9 +30,10 @@ async def create_bitrix_event(
         duration_minutes: Duration in minutes
         phone: Customer phone number
         zoom_link: Zoom meeting link
+        responsible_id: Optional Bitrix24 staff user ID to assign as responsible
         
     Returns:
-        Event ID if successful, None otherwise
+        Dictionary with event details if successful, None otherwise
     """
     if not BITRIX24_WEBHOOK_URL:
         logger.error("Bitrix24 webhook URL not configured")
@@ -70,6 +72,10 @@ async def create_bitrix_event(
             "remind": [{"type": "min", "count": 15}]  # 15-minute reminder
         }
         
+        # Add responsible person if provided
+        if responsible_id:
+            data["responsibleId"] = responsible_id
+        
         async with aiohttp.ClientSession() as session:
             async with session.post(api_url, json=data) as response:
                 if response.status == 200:
@@ -77,7 +83,14 @@ async def create_bitrix_event(
                     
                     # Check if request was successful
                     if result.get("result"):
-                        return str(result["result"])
+                        event_id = str(result["result"])
+                        return {
+                            "event_id": event_id,
+                            "name": name,
+                            "start_time": start_formatted,
+                            "end_time": end_formatted,
+                            "responsible_id": responsible_id
+                        }
                     else:
                         logger.error(f"Bitrix24 API error: {result.get('error')}")
                         return None
