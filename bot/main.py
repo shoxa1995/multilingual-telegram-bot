@@ -86,6 +86,31 @@ async def set_commands(bot: Bot):
     ]
     await bot.set_my_commands(commands)
 
+def initialize_bot():
+    """
+    Initialize bot components without starting polling.
+    This function is called from the main Flask application to ensure
+    all bot components are properly configured without actually
+    starting the polling, which would cause threading issues.
+    """
+    # Check if bot should be disabled
+    if os.environ.get("DISABLE_TELEGRAM_BOT"):
+        logger.info("Bot disabled via environment variable")
+        return False
+    
+    # Import database configuration
+    from bot.database import init_db
+    
+    # Initialize database synchronously
+    try:
+        # Run initialization code
+        asyncio.run(init_db())
+        logger.info("Bot database initialized successfully")
+        return True
+    except Exception as e:
+        logger.error(f"Error initializing bot database: {e}")
+        return False
+
 async def start_bot():
     """Initialize and start the bot"""
     # Check if bot should be disabled

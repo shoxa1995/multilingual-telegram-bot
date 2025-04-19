@@ -6,13 +6,10 @@ from datetime import datetime
 from sqlalchemy import Column, Integer, String, Boolean, DateTime, Enum, Text, ForeignKey, func, select
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
-try:
-    from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
-    USING_ASYNC = True
-except ImportError:
-    from sqlalchemy import create_engine
-    from sqlalchemy.orm import Session
-    USING_ASYNC = False
+# For the migration to aiogram 3.x, we'll use synchronous SQLAlchemy
+from sqlalchemy import create_engine  
+from sqlalchemy.orm import Session
+USING_ASYNC = False  # Force synchronous mode due to issues with asyncpg and sslmode
 
 from bot.config import DB_URL
 
