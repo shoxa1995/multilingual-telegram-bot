@@ -123,7 +123,52 @@ def logout():
 def staff():
     if 'user_id' not in session:
         return redirect(url_for('login'))
-    return render_template('staff.html', title="Staff Management")
+    
+    # Sample staff data - this would normally come from the database
+    staff_list = [
+        {
+            'id': 1, 
+            'name': 'Dr. John Smith', 
+            'bitrix_user_id': '101', 
+            'price': 5000, 
+            'is_active': True,
+            'photo_url': 'https://randomuser.me/api/portraits/men/1.jpg'
+        },
+        {
+            'id': 2, 
+            'name': 'Dr. Jane Johnson', 
+            'bitrix_user_id': '102', 
+            'price': 6000, 
+            'is_active': True,
+            'photo_url': 'https://randomuser.me/api/portraits/women/1.jpg'
+        },
+        {
+            'id': 3, 
+            'name': 'Dr. Michael Brown', 
+            'bitrix_user_id': '103', 
+            'price': 4500, 
+            'is_active': False,
+            'photo_url': 'https://randomuser.me/api/portraits/men/2.jpg'
+        },
+        {
+            'id': 4, 
+            'name': 'Dr. Emily Davis', 
+            'bitrix_user_id': '104', 
+            'price': 5500, 
+            'is_active': True,
+            'photo_url': 'https://randomuser.me/api/portraits/women/2.jpg'
+        },
+        {
+            'id': 5, 
+            'name': 'Dr. Robert White', 
+            'bitrix_user_id': '105', 
+            'price': 7000, 
+            'is_active': True,
+            'photo_url': 'https://randomuser.me/api/portraits/men/3.jpg'
+        }
+    ]
+    
+    return render_template('staff.html', title="Staff Management", staff_list=staff_list)
 
 @app.route('/bookings')
 def bookings():
@@ -215,6 +260,59 @@ def bookings_recent():
     </tr>
     """
     return html
+
+@app.route('/staff/add', methods=['GET', 'POST'])
+def add_staff():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    
+    if request.method == 'POST':
+        # In a real app, this would add to the database
+        flash('Staff member added successfully!', 'success')
+        return redirect(url_for('staff'))
+    
+    return render_template('staff_form.html', title="Add Staff Member", staff=None)
+
+@app.route('/staff/edit/<int:staff_id>', methods=['GET', 'POST'])
+def edit_staff(staff_id):
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    
+    # Sample data - in a real app, this would be retrieved from the database
+    staff_data = {
+        'id': staff_id,
+        'name': f'Dr. Sample {staff_id}',
+        'bitrix_user_id': f'10{staff_id}',
+        'description_en': 'English description',
+        'description_ru': 'Russian description',
+        'description_uz': 'Uzbek description',
+        'photo_url': f'https://randomuser.me/api/portraits/men/{staff_id}.jpg',
+        'price': 5000,
+        'is_active': True
+    }
+    
+    if request.method == 'POST':
+        # In a real app, this would update the database
+        flash('Staff member updated successfully!', 'success')
+        return redirect(url_for('staff'))
+    
+    return render_template('staff_form.html', title="Edit Staff Member", staff=staff_data)
+
+@app.route('/staff/toggle/<int:staff_id>', methods=['POST'])
+def toggle_staff(staff_id):
+    if 'user_id' not in session:
+        return "Unauthorized", 401
+    
+    # In a real app, this would toggle the is_active status in the database
+    return "success"
+
+@app.route('/staff/delete/<int:staff_id>', methods=['POST'])
+def delete_staff(staff_id):
+    if 'user_id' not in session:
+        return "Unauthorized", 401
+    
+    # In a real app, this would delete from the database
+    return "success"
 
 # Start the bot in a separate thread when the app starts
 bot_thread = threading.Thread(target=start_telegram_bot)
