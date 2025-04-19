@@ -111,6 +111,8 @@ async def process_pre_checkout(pre_checkout_query: PreCheckoutQuery) -> bool:
         True if successful, False otherwise
     """
     try:
+        from bot.database import get_booking_by_id_async, update_booking_payment_pending_async
+        
         # Extract booking ID from payload
         payload = pre_checkout_query.invoice_payload
         
@@ -120,9 +122,20 @@ async def process_pre_checkout(pre_checkout_query: PreCheckoutQuery) -> bool:
         
         booking_id = int(payload.split(":")[1])
         
-        # Here you would validate the booking exists and is still valid
-        # For now, we'll just return True
-        
+        # Verify the booking exists and is in a valid state
+        booking = await get_booking_by_id_async(booking_id)
+        if not booking:
+            logger.error(f"Booking {booking_id} not found during pre-checkout")
+            return False
+            
+        # Update booking status to payment_pending
+        result = await update_booking_payment_pending_async(booking_id, payload)
+        if not result:
+            logger.error(f"Failed to update booking {booking_id} status to payment_pending")
+            return False
+            
+        # At this point, the booking is valid and ready to accept payment
+        logger.info(f"Pre-checkout validated for booking {booking_id}")
         return True
     except Exception as e:
         logger.exception(f"Error processing pre-checkout: {e}")
@@ -140,33 +153,59 @@ async def process_successful_payment(booking_id: int, telegram_payment_charge_id
         True if successful, False otherwise
     """
     try:
-        # Here you would update the booking to confirmed status
-        # For now, we'll just return True and log the payment
+        from bot.database import update_booking_payment_completed_async
         
         logger.info(f"Payment successful for booking {booking_id}: {telegram_payment_charge_id}")
         
+        # Update booking status in database
+        result = await update_booking_payment_completed_async(
+            booking_id=booking_id,
+            payment_id=telegram_payment_charge_id
+        )
+        
+        if not result:
+            logger.error(f"Failed to update booking {booking_id} status after payment")
+            return False
+            
         # Return True to indicate success
         return True
     except Exception as e:
         logger.exception(f"Error processing successful payment: {e}")
         return False
 
-async def check_payment_status(payment_id: Optional[str]) -> str:
+async def check_payment_status(booking_id: int) -> str:
     """
-    Check the status of a payment with Telegram Payments API.
+    Check the status of a payment for a booking.
+    Queries the database to determine the current payment status.
     
     Args:
-        payment_id: Payment ID to check
+        booking_id: Booking ID to check
         
     Returns:
         Status string: "paid", "pending", or "failed"
     """
-    if not payment_id:
+    try:
+        from bot.database import get_booking_by_id_async
+        
+        if not booking_id:
+            logger.error("No booking ID provided for payment status check")
+            return "failed"
+        
+        # Get booking from database
+        booking = await get_booking_by_id_async(booking_id)
+        
+        if not booking:
+            logger.error(f"Booking {booking_id} not found when checking payment status")
+            return "failed"
+        
+        # Check booking status
+        if booking.status == "confirmed" and booking.payment_id:
+            return "paid"
+        elif booking.status == "payment_pending":
+            return "pending"
+        else:
+            return "failed"
+            
+    except Exception as e:
+        logger.exception(f"Error checking payment status for booking {booking_id}: {e}")
         return "failed"
-    
-    # With Telegram Payments API, payment is considered successful once the 
-    # successful_payment handler is called. In this simplified implementation, 
-    # we'll return "paid" if a payment ID exists, since we should only store a 
-    # payment ID after receiving a successful_payment from Telegram.
-    
-    return "paid"
