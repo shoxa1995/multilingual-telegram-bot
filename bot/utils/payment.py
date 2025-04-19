@@ -8,20 +8,20 @@ from typing import Optional, Dict, Any, Tuple
 from aiogram import Bot
 from aiogram.types import LabeledPrice, PreCheckoutQuery
 
-# Telegram Payment Provider tokens from BotFather
-# Use TEST token for development and LIVE token for production
-CLICK_PAYMENT_TOKEN_TEST = "398062629:TEST:999999999_F91D8F69C042267444B74CC0B3C747757EB0E065"
-CLICK_PAYMENT_TOKEN_LIVE = "333605228:LIVE:18486_1A5B4FF440980100E5F5C1D745DFCB165C5E2A37"
-
-# Use test token by default, switch to live token in production
-CLICK_PAYMENT_TOKEN = CLICK_PAYMENT_TOKEN_TEST
-
-# Set to True to use live token
-USE_LIVE_PAYMENTS = False
-if USE_LIVE_PAYMENTS:
-    CLICK_PAYMENT_TOKEN = CLICK_PAYMENT_TOKEN_LIVE
-
+# Initialize logger
 logger = logging.getLogger(__name__)
+
+# Import payment token from config
+from bot.config import PAYMENT_PROVIDER_TOKEN
+
+# Use the token from config, which already handles environment variables
+CLICK_PAYMENT_TOKEN = PAYMENT_PROVIDER_TOKEN
+
+# Log which token we're using (test or live)
+if CLICK_PAYMENT_TOKEN and "TEST" in CLICK_PAYMENT_TOKEN:
+    logging.info("Using Telegram Payments TEST mode")
+else:
+    logging.info("Using Telegram Payments LIVE mode")
 
 def generate_payment_link(booking_id: int, amount: int, description: str) -> str:
     """

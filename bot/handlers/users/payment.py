@@ -18,7 +18,7 @@ from bot.utils.notify import notify_admin_about_booking
 
 logger = logging.getLogger(__name__)
 
-async def pre_checkout_handler(pre_checkout_query: PreCheckoutQuery, bot):
+async def pre_checkout_handler(pre_checkout_query: PreCheckoutQuery):
     """
     Handle pre-checkout queries.
     This is called when a user confirms payment but before they're charged.
@@ -29,12 +29,11 @@ async def pre_checkout_handler(pre_checkout_query: PreCheckoutQuery, bot):
         
         if booking_success:
             # Answer with OK to confirm we're ready to accept payment
-            await bot.answer_pre_checkout_query(pre_checkout_query.id, ok=True)
+            await pre_checkout_query.answer(ok=True)
             logger.info(f"Pre-checkout query approved: {pre_checkout_query.id}")
         else:
             # Answer with error if booking validation failed
-            await bot.answer_pre_checkout_query(
-                pre_checkout_query.id, 
+            await pre_checkout_query.answer(
                 ok=False,
                 error_message="Sorry, your booking is no longer available. Please try again."
             )
@@ -42,8 +41,7 @@ async def pre_checkout_handler(pre_checkout_query: PreCheckoutQuery, bot):
     except Exception as e:
         # Handle any errors
         logger.exception(f"Error in pre_checkout_handler: {e}")
-        await bot.answer_pre_checkout_query(
-            pre_checkout_query.id,
+        await pre_checkout_query.answer(
             ok=False,
             error_message="Sorry, an error occurred while processing your payment. Please try again later."
         )
