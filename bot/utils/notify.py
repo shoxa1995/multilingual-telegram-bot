@@ -9,7 +9,7 @@ from aiogram import Bot
 from aiogram import enums
 
 from bot.config import ADMIN_IDS
-from bot.database import Session, Booking, User, Staff
+from bot.database import Session, Booking, TelegramUser, Staff
 from bot.utils.calendar import format_date_for_user
 
 logger = logging.getLogger(__name__)
@@ -28,7 +28,7 @@ async def notify_admin_about_booking(booking: Booking) -> None:
     session = Session()
     try:
         # Get user and staff
-        user = session.query(User).filter(User.id == booking.user_id).first()
+        user = session.query(TelegramUser).filter(TelegramUser.id == booking.user_id).first()
         staff = session.query(Staff).filter(Staff.id == booking.staff_id).first()
         
         if not user or not staff:
@@ -85,7 +85,7 @@ async def notify_admin_about_reschedule(booking: Booking, old_date: datetime) ->
     session = Session()
     try:
         # Get user and staff
-        user = session.query(User).filter(User.id == booking.user_id).first()
+        user = session.query(TelegramUser).filter(TelegramUser.id == booking.user_id).first()
         staff = session.query(Staff).filter(Staff.id == booking.staff_id).first()
         
         if not user or not staff:
@@ -138,7 +138,7 @@ async def notify_admin_about_cancellation(booking: Booking) -> None:
     session = Session()
     try:
         # Get user and staff
-        user = session.query(User).filter(User.id == booking.user_id).first()
+        user = session.query(TelegramUser).filter(TelegramUser.id == booking.user_id).first()
         staff = session.query(Staff).filter(Staff.id == booking.staff_id).first()
         
         if not user or not staff:
