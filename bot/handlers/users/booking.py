@@ -31,7 +31,7 @@ from bot.states.booking import BookingStates
 from bot.utils.calendar import format_date_for_user
 from bot.utils.zoom import create_zoom_meeting
 from bot.utils.bitrix24 import create_bitrix_event
-from bot.utils.payment import generate_payment_link, check_payment_status
+from bot.utils.payment import generate_payment_link, check_payment_status, create_invoice
 from bot.utils.notify import notify_admin_about_booking
 
 logger = logging.getLogger(__name__)
@@ -597,8 +597,8 @@ async def confirmation_callback(callback: CallbackQuery, state: FSMContext):
         
         # Check if payment is required
         if staff.price > 0:
-            # Generate a unique invoice payload
-            invoice_payload = f"booking_{booking.id}_{uuid.uuid4().hex[:8]}"
+            # Create a unique invoice payload
+            invoice_payload = f"booking:{booking.id}"
             
             # Update booking with invoice payload
             await update_booking_payment_pending_async(booking.id, invoice_payload)
@@ -606,14 +606,10 @@ async def confirmation_callback(callback: CallbackQuery, state: FSMContext):
             # Set state to payment
             await state.set_state(BookingStates.payment)
             
-            # Generate payment link
-            payment_link = generate_payment_link(booking.id, staff.price, f"Appointment with {staff.name}")
-            
             # Show payment instructions
             payment_text = _(
                 "<b>Payment Required</b>\n\n"
-                "Your booking has been created, but payment is required to confirm it.\n\n"
-                "Please use the link below to complete your payment:"
+                "Your booking has been created, but payment is required to confirm it."
             )
             
             await callback.message.edit_text(
@@ -621,27 +617,51 @@ async def confirmation_callback(callback: CallbackQuery, state: FSMContext):
                 parse_mode="HTML"
             )
             
-            # Send payment button
-            await callback.message.answer(
-                _("Pay {amount}").format(amount=f"{staff.price/100:.2f}"),
-                reply_markup={
-                    "inline_keyboard": [[{
-                        "text": _("Pay Now"),
-                        "url": payment_link
-                    }]]
-                }
+            # Get bot instance from current context
+            from bot.main import bot as current_bot
+            
+            # Send payment invoice
+            payment_description = _("Appointment with {staff_name} on {date}").format(
+                staff_name=staff.name,
+                date=booking.booking_date.strftime("%Y-%m-%d %H:%M")
             )
             
-            # Send instruction for after payment
-            await callback.message.answer(
-                _("After completing payment, please press the button below to check payment status:"),
-                reply_markup={
-                    "inline_keyboard": [[{
-                        "text": _("Check Payment Status"),
-                        "callback_data": f"check_payment:{booking.id}"
-                    }]]
-                }
-            )
+            try:
+                # Send the invoice directly
+                await create_invoice(
+                    bot=current_bot,
+                    chat_id=callback.from_user.id,
+                    booking_id=booking.id,
+                    amount=staff.price,
+                    description=payment_description,
+                    title=_("Appointment Booking")
+                )
+                
+                # Also provide a backup method to check payment status
+                await callback.message.answer(
+                    _("If you close this payment dialog, you can check your payment status using this button:"),
+                    reply_markup={
+                        "inline_keyboard": [[{
+                            "text": _("Check Payment Status"),
+                            "callback_data": f"check_payment:{booking.id}"
+                        }]]
+                    }
+                )
+            except Exception as e:
+                logger.exception(f"Failed to create invoice: {e}")
+                
+                # Fallback to old payment method
+                payment_link = generate_payment_link(booking.id, staff.price, f"Appointment with {staff.name}")
+                
+                await callback.message.answer(
+                    _("Unable to create payment invoice. Please contact support or try again later."),
+                    reply_markup={
+                        "inline_keyboard": [[{
+                            "text": _("Check Payment Status"),
+                            "callback_data": f"check_payment:{booking.id}"
+                        }]]
+                    }
+                )
         else:
             # No payment required, confirm booking directly
             # Create Zoom meeting

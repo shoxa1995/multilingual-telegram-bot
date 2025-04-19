@@ -146,7 +146,7 @@ async def view_booking_callback(callback: types.CallbackQuery, callback_data: Di
             await callback.message.edit_text(
                 details_text,
                 reply_markup=booking_actions_keyboard(booking_id),
-                parse_mode=types.ParseMode.HTML
+                parse_mode="HTML"
             )
             
         finally:

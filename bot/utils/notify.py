@@ -60,7 +60,7 @@ async def notify_admin_about_booking(booking: Booking) -> None:
                 await bot.send_message(
                     chat_id=admin_id,
                     text=message,
-                    parse_mode=ParseMode.HTML
+                    parse_mode=enums.ParseMode.HTML
                 )
             except Exception as e:
                 logger.exception(f"Failed to send notification to admin {admin_id}: {e}")
@@ -114,7 +114,7 @@ async def notify_admin_about_reschedule(booking: Booking, old_date: datetime) ->
                 await bot.send_message(
                     chat_id=admin_id,
                     text=message,
-                    parse_mode=ParseMode.HTML
+                    parse_mode=enums.ParseMode.HTML
                 )
             except Exception as e:
                 logger.exception(f"Failed to send notification to admin {admin_id}: {e}")
@@ -165,7 +165,7 @@ async def notify_admin_about_cancellation(booking: Booking) -> None:
                 await bot.send_message(
                     chat_id=admin_id,
                     text=message,
-                    parse_mode=ParseMode.HTML
+                    parse_mode=enums.ParseMode.HTML
                 )
             except Exception as e:
                 logger.exception(f"Failed to send notification to admin {admin_id}: {e}")
