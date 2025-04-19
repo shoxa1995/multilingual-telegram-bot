@@ -10,7 +10,7 @@ from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Command
 from aiogram.utils.exceptions import MessageNotModified
 
-from bot.database import Session, TelegramUser, Booking, Staff, BookingStatus
+from bot.database import Session, User, Booking, Staff, BookingStatus
 from bot.keyboards.reply import main_menu_keyboard
 from bot.keyboards.inline import (
     my_bookings_keyboard, booking_actions_keyboard, calendar_keyboard,
@@ -35,7 +35,7 @@ async def cmd_my_bookings(message: types.Message, state: FSMContext):
     # Get user bookings
     session = Session()
     try:
-        user = session.query(TelegramUser).filter(TelegramUser.telegram_id == message.from_user.id).first()
+        user = session.query(User).filter(User.telegram_id == message.from_user.id).first()
         
         if not user:
             await message.answer(
@@ -88,7 +88,7 @@ async def view_booking_callback(callback: types.CallbackQuery, callback_data: Di
         # Get booking details
         session = Session()
         try:
-            user = session.query(TelegramUser).filter(TelegramUser.telegram_id == callback.from_user.id).first()
+            user = session.query(User).filter(User.telegram_id == callback.from_user.id).first()
             booking = session.query(Booking).join(Staff).filter(
                 Booking.id == booking_id,
                 Booking.user_id == user.id
@@ -199,7 +199,7 @@ async def view_booking_callback(callback: types.CallbackQuery, callback_data: Di
         # Cancel the booking
         session = Session()
         try:
-            user = session.query(TelegramUser).filter(TelegramUser.telegram_id == callback.from_user.id).first()
+            user = session.query(User).filter(User.telegram_id == callback.from_user.id).first()
             booking = session.query(Booking).filter(
                 Booking.id == booking_id,
                 Booking.user_id == user.id
@@ -335,7 +335,7 @@ async def reschedule_time_callback(callback: types.CallbackQuery, callback_data:
         # Update booking
         session = Session()
         try:
-            user = session.query(TelegramUser).filter(TelegramUser.telegram_id == callback.from_user.id).first()
+            user = session.query(User).filter(User.telegram_id == callback.from_user.id).first()
             booking = session.query(Booking).filter(
                 Booking.id == booking_id,
                 Booking.user_id == user.id

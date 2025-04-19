@@ -11,7 +11,7 @@ from sqlalchemy.orm import Session
 from admin.auth import get_current_user
 from admin.database import get_db
 from admin.models import AdminUser
-from bot.database import Booking, BookingStatus, TelegramUser, Staff
+from bot.database import Booking, BookingStatus, User, Staff
 from bot.utils.zoom import update_zoom_meeting
 from bot.utils.bitrix24 import update_bitrix_event
 
@@ -34,7 +34,7 @@ async def get_bookings_list(
     Get the list of bookings with filters.
     """
     # Base query
-    query = db.query(Booking).join(TelegramUser).join(Staff)
+    query = db.query(Booking).join(User).join(Staff)
     
     # Apply filters
     if status:
@@ -64,10 +64,10 @@ async def get_bookings_list(
     
     if search:
         query = query.filter(
-            (TelegramUser.first_name.ilike(f"%{search}%")) |
-            (TelegramUser.last_name.ilike(f"%{search}%")) |
-            (TelegramUser.phone_number.ilike(f"%{search}%")) |
-            (TelegramUser.username.ilike(f"%{search}%"))
+            (User.first_name.ilike(f"%{search}%")) |
+            (User.last_name.ilike(f"%{search}%")) |
+            (User.phone_number.ilike(f"%{search}%")) |
+            (User.username.ilike(f"%{search}%"))
         )
     
     # Order by date, most recent first

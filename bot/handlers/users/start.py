@@ -7,7 +7,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.filters import Command, CommandStart
 from aiogram.exceptions import TelegramBadRequest
 
-from bot.database import sync_session, TelegramUser
+from bot.database import sync_session, User
 from bot.keyboards.reply import language_keyboard, main_menu_keyboard
 from bot.keyboards.inline import staff_selection_keyboard
 from bot.middlewares.i18n import _, i18n
@@ -24,11 +24,11 @@ async def cmd_start(message: types.Message, state: FSMContext):
     # Get or create user in database
     session = sync_session()
     try:
-        user = session.query(TelegramUser).filter(TelegramUser.telegram_id == message.from_user.id).first()
+        user = session.query(User).filter(User.telegram_id == message.from_user.id).first()
         
         if not user:
             # Create new user
-            user = TelegramUser(
+            user = User(
                 telegram_id=message.from_user.id,
                 first_name=message.from_user.first_name,
                 last_name=message.from_user.last_name,
@@ -79,7 +79,7 @@ async def language_selection(message: types.Message):
     # Update user language in database
     session = sync_session()
     try:
-        user = session.query(TelegramUser).filter(TelegramUser.telegram_id == message.from_user.id).first()
+        user = session.query(User).filter(User.telegram_id == message.from_user.id).first()
         
         if user:
             user.language = selected_lang
@@ -97,7 +97,7 @@ async def language_selection(message: types.Message):
             )
         else:
             # User not found, create new user
-            user = TelegramUser(
+            user = User(
                 telegram_id=message.from_user.id,
                 first_name=message.from_user.first_name,
                 last_name=message.from_user.last_name,
@@ -136,7 +136,7 @@ async def cmd_help(message: types.Message):
     # Get user language
     session = sync_session()
     try:
-        user = session.query(TelegramUser).filter(TelegramUser.telegram_id == message.from_user.id).first()
+        user = session.query(User).filter(User.telegram_id == message.from_user.id).first()
         language = user.language if user else 'en'
     finally:
         session.close()
@@ -187,7 +187,7 @@ async def text_handler(message: types.Message):
     # Get user language
     session = sync_session()
     try:
-        user = session.query(TelegramUser).filter(TelegramUser.telegram_id == message.from_user.id).first()
+        user = session.query(User).filter(User.telegram_id == message.from_user.id).first()
         language = user.language if user else 'en'
     finally:
         session.close()
