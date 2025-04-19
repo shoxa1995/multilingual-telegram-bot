@@ -56,17 +56,17 @@ def start_telegram_bot():
         loop.close()
     """
 
-# Define models for admin panel
-class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(80), unique=True, nullable=False)
-    password_hash = db.Column(db.String(256), nullable=False)
+# User model methods
+def set_password(self, password):
+    self.password_hash = generate_password_hash(password)
     
-    def set_password(self, password):
-        self.password_hash = generate_password_hash(password)
-        
-    def check_password(self, password):
-        return check_password_hash(self.password_hash, password)
+def check_password(self, password):
+    return check_password_hash(self.password_hash, password)
+
+# Add methods to the User model imported from models.py
+from models import User
+User.set_password = set_password
+User.check_password = check_password
 
 # Add context processor for datetime and current user
 @app.context_processor
@@ -128,49 +128,9 @@ def staff():
     if 'user_id' not in session:
         return redirect(url_for('login'))
     
-    # Sample staff data - this would normally come from the database
-    staff_list = [
-        {
-            'id': 1, 
-            'name': 'Dr. John Smith', 
-            'bitrix_user_id': '101', 
-            'price': 5000, 
-            'is_active': True,
-            'photo_url': 'https://randomuser.me/api/portraits/men/1.jpg'
-        },
-        {
-            'id': 2, 
-            'name': 'Dr. Jane Johnson', 
-            'bitrix_user_id': '102', 
-            'price': 6000, 
-            'is_active': True,
-            'photo_url': 'https://randomuser.me/api/portraits/women/1.jpg'
-        },
-        {
-            'id': 3, 
-            'name': 'Dr. Michael Brown', 
-            'bitrix_user_id': '103', 
-            'price': 4500, 
-            'is_active': False,
-            'photo_url': 'https://randomuser.me/api/portraits/men/2.jpg'
-        },
-        {
-            'id': 4, 
-            'name': 'Dr. Emily Davis', 
-            'bitrix_user_id': '104', 
-            'price': 5500, 
-            'is_active': True,
-            'photo_url': 'https://randomuser.me/api/portraits/women/2.jpg'
-        },
-        {
-            'id': 5, 
-            'name': 'Dr. Robert White', 
-            'bitrix_user_id': '105', 
-            'price': 7000, 
-            'is_active': True,
-            'photo_url': 'https://randomuser.me/api/portraits/men/3.jpg'
-        }
-    ]
+    from models import Staff
+    # Get staff data from the database
+    staff_list = Staff.query.all()
     
     return render_template('staff.html', title="Staff Management", staff_list=staff_list)
 
@@ -191,78 +151,102 @@ def schedule():
 def bookings_stats_total():
     if 'user_id' not in session:
         return "0", 401
-    return "42"  # Sample data
+    
+    from models import Booking
+    # Count total bookings
+    total_count = Booking.query.count()
+    return str(total_count)
 
 @app.route('/bookings/stats/today')
 def bookings_stats_today():
     if 'user_id' not in session:
         return "0", 401
-    return "7"  # Sample data
+    
+    from models import Booking
+    from datetime import datetime, time
+    # Count today's bookings
+    today = datetime.now().date()
+    today_start = datetime.combine(today, time.min)
+    today_end = datetime.combine(today, time.max)
+    
+    today_count = Booking.query.filter(
+        Booking.booking_date >= today_start,
+        Booking.booking_date <= today_end
+    ).count()
+    
+    return str(today_count)
 
 @app.route('/bookings/stats/pending-payments')
 def bookings_stats_pending_payments():
     if 'user_id' not in session:
         return "0", 401
-    return "3"  # Sample data
+    
+    from models import Booking, BookingStatus
+    # Count pending payment bookings
+    pending_payments = Booking.query.filter_by(status=BookingStatus.PAYMENT_PENDING).count()
+    return str(pending_payments)
 
 @app.route('/staff/stats/active')
 def staff_stats_active():
     if 'user_id' not in session:
         return "0", 401
-    return "5"  # Sample data
+    
+    from models import Staff
+    # Count active staff members
+    active_count = Staff.query.filter_by(is_active=True).count()
+    return str(active_count)
 
 @app.route('/bookings/recent')
 def bookings_recent():
     if 'user_id' not in session:
         return "No data", 401
     
-    # Return HTML for the recent bookings table
-    html = """
-    <tr>
-        <td>1</td>
-        <td>
-            <div>John Doe</div>
-            <small class="text-muted">+1234567890</small>
-        </td>
-        <td>Dr. Smith</td>
-        <td>18 Apr 2025 13:00</td>
-        <td>
-            <span class="badge status-confirmed">CONFIRMED</span>
-        </td>
-        <td>
-            <div class="btn-group">
-                <a href="/bookings/1" class="btn btn-sm btn-primary">
-                    <i class="fas fa-eye"></i>
-                </a>
-                <button class="btn btn-sm btn-danger delete-btn" data-id="1" data-type="bookings">
-                    <i class="fas fa-trash"></i>
-                </button>
-            </div>
-        </td>
-    </tr>
-    <tr>
-        <td>2</td>
-        <td>
-            <div>Jane Smith</div>
-            <small class="text-muted">+0987654321</small>
-        </td>
-        <td>Dr. Johnson</td>
-        <td>19 Apr 2025 15:30</td>
-        <td>
-            <span class="badge status-pending">PENDING</span>
-        </td>
-        <td>
-            <div class="btn-group">
-                <a href="/bookings/2" class="btn btn-sm btn-primary">
-                    <i class="fas fa-eye"></i>
-                </a>
-                <button class="btn btn-sm btn-danger delete-btn" data-id="2" data-type="bookings">
-                    <i class="fas fa-trash"></i>
-                </button>
-            </div>
-        </td>
-    </tr>
-    """
+    from models import Booking, BookingStatus
+    # Get recent bookings
+    recent_bookings = Booking.query.order_by(Booking.created_at.desc()).limit(5).all()
+    
+    if not recent_bookings:
+        return "<tr><td colspan='6' class='text-center'>No bookings found</td></tr>"
+    
+    html = ""
+    for booking in recent_bookings:
+        status_class = ""
+        if booking.status == BookingStatus.CONFIRMED:
+            status_class = "status-confirmed"
+        elif booking.status == BookingStatus.PENDING:
+            status_class = "status-pending"
+        elif booking.status == BookingStatus.PAYMENT_PENDING:
+            status_class = "status-payment-pending"
+        elif booking.status == BookingStatus.CANCELLED:
+            status_class = "status-cancelled"
+        elif booking.status == BookingStatus.COMPLETED:
+            status_class = "status-completed"
+        
+        html += f"""
+        <tr>
+            <td>{booking.id}</td>
+            <td>
+                <div>{booking.user.first_name} {booking.user.last_name or ''}</div>
+                <small class="text-muted">{booking.user.phone_number or 'No phone'}</small>
+            </td>
+            <td>{booking.staff.name}</td>
+            <td>{booking.booking_date.strftime('%d %b %Y %H:%M')}</td>
+            <td>
+                <span class="badge {status_class}">{booking.status.value.upper()}</span>
+            </td>
+            <td>
+                <div class="btn-group">
+                    <a href="/bookings/{booking.id}" class="btn btn-sm btn-primary">
+                        <i class="fas fa-eye"></i>
+                    </a>
+                    <button class="btn btn-sm btn-danger delete-btn" data-id="{booking.id}" data-type="bookings">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </td>
+        </tr>
+        """
+    
     return html
 
 @app.route('/staff/add', methods=['GET', 'POST'])
@@ -270,8 +254,24 @@ def add_staff():
     if 'user_id' not in session:
         return redirect(url_for('login'))
     
+    from models import Staff
+    
     if request.method == 'POST':
-        # In a real app, this would add to the database
+        # Create a new staff member
+        new_staff = Staff(
+            name=request.form.get('name'),
+            bitrix_user_id=request.form.get('bitrix_user_id'),
+            description_en=request.form.get('description_en'),
+            description_ru=request.form.get('description_ru'),
+            description_uz=request.form.get('description_uz'),
+            photo_url=request.form.get('photo_url'),
+            price=int(request.form.get('price', 0)),
+            is_active=bool(request.form.get('is_active', False))
+        )
+        
+        db.session.add(new_staff)
+        db.session.commit()
+        
         flash('Staff member added successfully!', 'success')
         return redirect(url_for('staff'))
     
@@ -282,32 +282,41 @@ def edit_staff(staff_id):
     if 'user_id' not in session:
         return redirect(url_for('login'))
     
-    # Sample data - in a real app, this would be retrieved from the database
-    staff_data = {
-        'id': staff_id,
-        'name': f'Dr. Sample {staff_id}',
-        'bitrix_user_id': f'10{staff_id}',
-        'description_en': 'English description',
-        'description_ru': 'Russian description',
-        'description_uz': 'Uzbek description',
-        'photo_url': f'https://randomuser.me/api/portraits/men/{staff_id}.jpg',
-        'price': 5000,
-        'is_active': True
-    }
+    from models import Staff
+    
+    # Get staff from database
+    staff = Staff.query.get_or_404(staff_id)
     
     if request.method == 'POST':
-        # In a real app, this would update the database
+        # Update staff data
+        staff.name = request.form.get('name')
+        staff.bitrix_user_id = request.form.get('bitrix_user_id')
+        staff.description_en = request.form.get('description_en')
+        staff.description_ru = request.form.get('description_ru')
+        staff.description_uz = request.form.get('description_uz')
+        staff.photo_url = request.form.get('photo_url')
+        staff.price = int(request.form.get('price', 0))
+        staff.is_active = 'is_active' in request.form
+        
+        db.session.commit()
+        
         flash('Staff member updated successfully!', 'success')
         return redirect(url_for('staff'))
     
-    return render_template('staff_form.html', title="Edit Staff Member", staff=staff_data)
+    return render_template('staff_form.html', title="Edit Staff Member", staff=staff)
 
 @app.route('/staff/toggle/<int:staff_id>', methods=['POST'])
 def toggle_staff(staff_id):
     if 'user_id' not in session:
         return "Unauthorized", 401
     
-    # In a real app, this would toggle the is_active status in the database
+    from models import Staff
+    
+    # Toggle staff active status
+    staff = Staff.query.get_or_404(staff_id)
+    staff.is_active = not staff.is_active
+    db.session.commit()
+    
     return "success"
 
 @app.route('/staff/delete/<int:staff_id>', methods=['POST'])
@@ -315,7 +324,13 @@ def delete_staff(staff_id):
     if 'user_id' not in session:
         return "Unauthorized", 401
     
-    # In a real app, this would delete from the database
+    from models import Staff
+    
+    # Delete staff from database
+    staff = Staff.query.get_or_404(staff_id)
+    db.session.delete(staff)
+    db.session.commit()
+    
     return "success"
 
 # Start the bot in a separate thread when the app starts
