@@ -1,2 +1,2 @@
 #!/bin/bash
-python3 Multilingual-Telegram-Bot/bot/main.py
+python3 multilingual-telegram-bot/bot/main.py
