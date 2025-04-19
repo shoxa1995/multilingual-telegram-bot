@@ -403,3 +403,23 @@ async def update_booking_payment_completed_async(booking_id: int, payment_id: st
 async def cancel_booking_async(booking_id: int):
     """Async wrapper for cancel_booking"""
     return cancel_booking(booking_id)
+    
+    
+def update_booking_status(booking_id: int, status: BookingStatus):
+    """Update booking status to any valid status (synchronous version)"""
+    with sync_session() as session:
+        query = select(Booking).where(Booking.id == booking_id)
+        result = session.execute(query)
+        booking = result.scalar_one_or_none()
+        
+        if booking:
+            booking.status = status
+            session.commit()
+            return True
+        
+        return False
+
+
+async def update_booking_status_async(booking_id: int, status: BookingStatus):
+    """Async wrapper for update_booking_status"""
+    return update_booking_status(booking_id, status)

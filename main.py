@@ -280,7 +280,17 @@ def update_booking_status(booking_id):
             refund_success = loop.run_until_complete(process_refund(bot, booking_id))
             
             if refund_success:
-                flash('Booking cancelled and refund initiated successfully', 'success')
+                # Also try to send an email notification if possible
+                try:
+                    from bot.utils.email import send_refund_notification
+                    email_sent = send_refund_notification(booking)
+                    if email_sent:
+                        flash('Booking cancelled and refund initiated successfully. Email notification sent.', 'success')
+                    else:
+                        flash('Booking cancelled and refund initiated successfully. Email notification could not be sent.', 'success')
+                except Exception as email_err:
+                    logger.exception(f"Error sending refund email notification: {email_err}")
+                    flash('Booking cancelled and refund initiated successfully. Email notification failed.', 'success')
             else:
                 flash('Booking status updated, but refund processing failed', 'warning')
                 # Still continue with the status change

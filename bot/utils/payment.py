@@ -229,7 +229,7 @@ async def process_refund(bot: Bot, booking_id: int) -> bool:
     """
     try:
         from bot.database import get_booking_by_id_async, update_booking_status_async
-        from bot.models import BookingStatus
+        from models import BookingStatus
         
         # Get booking details
         booking = await get_booking_by_id_async(booking_id)
