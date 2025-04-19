@@ -38,38 +38,16 @@ signal.signal(signal.SIGTERM, signal_handler)
 async def run_bot():
     """Run the Telegram bot with proper error handling"""
     try:
-        from bot.main import bot, dp
-        from aiogram.exceptions import TelegramNetworkError, TelegramRetryAfter
+        # Import the start_bot function directly
+        from bot.main import start_bot
         
-        # Setup the dispatcher with the bot commands
-        from bot.handlers import get_all_routers
-        dp.include_router(get_all_routers())
-        
-        # Set up command list
-        from aiogram.types import BotCommand
-        from aiogram.enums import BotCommandScopeType
-        
-        # Define commands
-        commands = [
-            BotCommand(command="start", description="Start the bot"),
-            BotCommand(command="help", description="Show help information"),
-            BotCommand(command="book", description="Book an appointment"),
-            BotCommand(command="mybookings", description="View your bookings"),
-            BotCommand(command="language", description="Change language")
-        ]
-        
-        # Set commands
-        await bot.set_my_commands(commands=commands)
-        
-        # Start polling
-        logger.info("Starting bot polling...")
-        await dp.start_polling(bot, allowed_updates=["message", "callback_query", "pre_checkout_query"])
+        # Let the bot module handle all the initialization and polling
+        await start_bot()
+        return 0
         
     except Exception as e:
         logger.error(f"Error in run_bot: {e}", exc_info=True)
         return 1
-    
-    return 0
 
 async def main():
     """Main entry point with retry logic"""

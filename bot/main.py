@@ -81,8 +81,9 @@ from bot.handlers.users import register_user_handlers
 
 logger = logging.getLogger(__name__)
 
-# Global bot instance
+# Global bot and dispatcher instances
 _bot = None
+_dp = None
 
 # Helper to access the bot instance
 def get_bot():
@@ -90,15 +91,18 @@ def get_bot():
     global _bot
     return _bot
 
-# Export the bot for external modules
+# Export the bot and dispatcher for external modules
 bot = None
+dp = None
+
 def setup_bot_export():
     """
-    Update the exported bot variable for other modules to use.
-    This function should be called after the bot is initialized.
+    Update the exported bot and dispatcher variables for other modules to use.
+    This function should be called after the bot and dispatcher are initialized.
     """
-    global bot, _bot
+    global bot, _bot, dp, _dp
     bot = _bot
+    dp = _dp
 
 async def set_commands(bot: Bot):
     """Set bot commands in menu"""
@@ -191,6 +195,13 @@ async def start_bot():
         
         # Dispatcher initialization for aiogram 3.x
         dp = Dispatcher(storage=storage)
+        
+        # Make the dispatcher available globally
+        global _dp
+        _dp = dp
+        
+        # Update the exported dispatcher for other modules
+        setup_bot_export()
         
         # Initialize database
         await init_db()
