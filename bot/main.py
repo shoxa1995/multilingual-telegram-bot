@@ -95,28 +95,33 @@ async def start_bot():
         
     # Initialize bot and dispatcher with aiogram 3.x style
     try:
-        # Initialize bot with proper parse mode from enums for aiogram 3.x
-        bot = Bot(token=BOT_TOKEN, parse_mode=enums.ParseMode.HTML)
+        # Import DefaultBotProperties for aiogram 3.7.0+
+        from aiogram.client.default import DefaultBotProperties
         
-        # Use Memory storage for states (new import path in aiogram 3.x)
+        # Initialize bot with proper syntax for aiogram 3.7.0+
+        bot = Bot(token=BOT_TOKEN, default=DefaultBotProperties(parse_mode=enums.ParseMode.HTML))
+        
+        # Use Memory storage for states
         storage = MemoryStorage()
         
-        # Dispatcher initialization is different in aiogram 3.x
+        # Dispatcher initialization for aiogram 3.x
         dp = Dispatcher()
         
         # Initialize database
         await init_db()
         
+        # Register all handlers
+        # register_user_handlers(dp)
+        
         # Set bot commands
         await set_commands(bot)
         
-        # Start polling - different approach in aiogram 3.x
+        # Start polling in aiogram 3.x
         logger.info("Starting bot polling...")
         try:
-            # In aiogram 3.x, polling is done differently
             await dp.start_polling(bot, storage=storage)
         finally:
-            # No need to close session in aiogram 3.x, it's handled automatically
+            # Bot session closes automatically
             pass
             
     except Exception as e:

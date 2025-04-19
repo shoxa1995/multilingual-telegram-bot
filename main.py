@@ -627,8 +627,8 @@ def create_test_data():
     
     return redirect(url_for('bookings'))
 
-# Set environment variable to disable Telegram bot due to aiogram compatibility issues
-os.environ["DISABLE_TELEGRAM_BOT"] = "1"
+# Temporarily enable the Telegram bot for testing
+# os.environ["DISABLE_TELEGRAM_BOT"] = "1"
 
 # Start the bot in a separate thread when the app starts
 bot_thread = threading.Thread(target=start_telegram_bot)
