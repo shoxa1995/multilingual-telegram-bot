@@ -557,6 +557,62 @@ def delete_staff(staff_id):
     
     return "success"
 
+# Route for creating test data
+@app.route('/create-test-data')
+def create_test_data():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    
+    from models import TelegramUser, Booking, BookingStatus, Staff
+    from datetime import datetime, timedelta
+    
+    # Check if we already have a test user
+    test_user = TelegramUser.query.filter_by(telegram_id=12345).first()
+    if not test_user:
+        # Create a test user
+        test_user = TelegramUser(
+            telegram_id=12345,
+            first_name="Test",
+            last_name="User",
+            username="testuser",
+            language="en",
+            phone_number="+1234567890"
+        )
+        db.session.add(test_user)
+        db.session.commit()
+    
+    # Get a staff member
+    staff = Staff.query.filter_by(is_active=True).first()
+    if not staff:
+        return "No active staff found. Please add a staff member first."
+    
+    # Create a test booking
+    now = datetime.now()
+    booking = Booking(
+        user_id=test_user.id,
+        staff_id=staff.id,
+        booking_date=now + timedelta(days=1),
+        duration_minutes=30,
+        status=BookingStatus.PENDING,
+        price=staff.price
+    )
+    db.session.add(booking)
+    
+    # Create another booking with different status
+    booking2 = Booking(
+        user_id=test_user.id,
+        staff_id=staff.id,
+        booking_date=now + timedelta(days=2),
+        duration_minutes=60,
+        status=BookingStatus.CONFIRMED,
+        price=staff.price * 2
+    )
+    db.session.add(booking2)
+    
+    db.session.commit()
+    
+    return redirect(url_for('bookings'))
+
 # Start the bot in a separate thread when the app starts
 bot_thread = threading.Thread(target=start_telegram_bot)
 bot_thread.daemon = True
