@@ -137,6 +137,85 @@ def schedule():
         return redirect(url_for('login'))
     return render_template('schedule.html', title="Schedule Management")
 
+# API endpoints for AJAX requests
+@app.route('/bookings/stats/total')
+def bookings_stats_total():
+    if 'user_id' not in session:
+        return "0", 401
+    return "42"  # Sample data
+
+@app.route('/bookings/stats/today')
+def bookings_stats_today():
+    if 'user_id' not in session:
+        return "0", 401
+    return "7"  # Sample data
+
+@app.route('/bookings/stats/pending-payments')
+def bookings_stats_pending_payments():
+    if 'user_id' not in session:
+        return "0", 401
+    return "3"  # Sample data
+
+@app.route('/staff/stats/active')
+def staff_stats_active():
+    if 'user_id' not in session:
+        return "0", 401
+    return "5"  # Sample data
+
+@app.route('/bookings/recent')
+def bookings_recent():
+    if 'user_id' not in session:
+        return "No data", 401
+    
+    # Return HTML for the recent bookings table
+    html = """
+    <tr>
+        <td>1</td>
+        <td>
+            <div>John Doe</div>
+            <small class="text-muted">+1234567890</small>
+        </td>
+        <td>Dr. Smith</td>
+        <td>18 Apr 2025 13:00</td>
+        <td>
+            <span class="badge status-confirmed">CONFIRMED</span>
+        </td>
+        <td>
+            <div class="btn-group">
+                <a href="/bookings/1" class="btn btn-sm btn-primary">
+                    <i class="fas fa-eye"></i>
+                </a>
+                <button class="btn btn-sm btn-danger delete-btn" data-id="1" data-type="bookings">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <td>2</td>
+        <td>
+            <div>Jane Smith</div>
+            <small class="text-muted">+0987654321</small>
+        </td>
+        <td>Dr. Johnson</td>
+        <td>19 Apr 2025 15:30</td>
+        <td>
+            <span class="badge status-pending">PENDING</span>
+        </td>
+        <td>
+            <div class="btn-group">
+                <a href="/bookings/2" class="btn btn-sm btn-primary">
+                    <i class="fas fa-eye"></i>
+                </a>
+                <button class="btn btn-sm btn-danger delete-btn" data-id="2" data-type="bookings">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        </td>
+    </tr>
+    """
+    return html
+
 # Start the bot in a separate thread when the app starts
 bot_thread = threading.Thread(target=start_telegram_bot)
 bot_thread.daemon = True
