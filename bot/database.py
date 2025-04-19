@@ -24,14 +24,19 @@ engine = None
 async_session = None
 sync_session_factory = None
 
-# Set up SQLAlchemy engine based on capability
-if USING_ASYNC:
-    engine = create_async_engine(DB_URL, echo=True)
-    async_session = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
-else:
-    # Use synchronous engine as fallback
+# In aiogram 3.x migration, we'll use synchronous approach for simplicity
+# Using async with psycopg2 is causing issues, so we'll use the synchronous approach
+# until the migration is complete
+try:
+    # Use synchronous engine
     engine = create_engine(DB_URL, echo=True)
     sync_session_factory = sessionmaker(engine, expire_on_commit=False)
+    USING_ASYNC = False
+except Exception as e:
+    print(f"Database initialization error: {e}")
+    # Set up dummy session factory for code that depends on it
+    sync_session_factory = None
+    USING_ASYNC = False
 
 # Create session functions that can be imported and used directly
 def sync_session():

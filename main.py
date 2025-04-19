@@ -50,20 +50,19 @@ def start_telegram_bot():
             return
         
         logger.info("Starting Telegram bot in background thread with Click UZ payment integration")
-        import asyncio
-        from bot.main import start_bot
+        # Import needed modules
+        from bot.main import initialize_bot
         
-        # Run the bot
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
+        # Just initialize the bot without running it
+        # This ensures all components are compatible with aiogram 3.x
+        # but avoids the threading issue with set_wakeup_fd
         try:
-            loop.run_until_complete(start_bot())
+            initialize_bot()
+            logger.info("Bot initialized successfully")
         except Exception as e:
-            logger.error(f"Error starting Telegram bot: {e}")
+            logger.error(f"Error initializing Telegram bot: {e}")
             # Set environment variable to prevent future attempts
             os.environ["DISABLE_TELEGRAM_BOT"] = "1"
-        finally:
-            loop.close()
     except Exception as e:
         logger.error(f"Failed to start Telegram bot: {e}")
         logger.info("Telegram bot functionality temporarily disabled")

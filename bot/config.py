@@ -16,12 +16,18 @@ REDIS_DB = int(os.getenv("REDIS_DB", 0))
 # Database configuration
 # Get standard DATABASE_URL from environment and convert to async-compatible format if needed
 raw_db_url = os.getenv("DATABASE_URL", "sqlite:///booking.db")
-# If using PostgreSQL, ensure we're using the async driver
+
+# Due to issues with asyncpg and sslmode parameter, we'll use psycopg2 for now
+# This simplifies the migration process and avoids connection issues
+DB_URL = raw_db_url
+
+# Store a separate URL for possible async usage in the future
+ASYNC_DB_URL = None
 if raw_db_url and raw_db_url.startswith("postgresql"):
-    # Replace postgresql:// with postgresql+asyncpg:// to use asyncpg driver
-    DB_URL = raw_db_url.replace("postgresql://", "postgresql+asyncpg://")
+    # For future reference, keep the async URL format
+    ASYNC_DB_URL = raw_db_url.replace("postgresql://", "postgresql+asyncpg://")
 else:
-    DB_URL = raw_db_url
+    ASYNC_DB_URL = raw_db_url
 
 # Bitrix24 API configuration
 BITRIX24_WEBHOOK_URL = os.getenv("BITRIX24_WEBHOOK_URL")
