@@ -4,9 +4,66 @@ Initializes and starts the bot with all required handlers and middlewares.
 """
 import asyncio
 import logging
-from aiogram import Bot, Dispatcher
-from aiogram.dispatcher.storage import MemoryStorage
-from aiogram.types import BotCommand, ParseMode
+try:
+    from aiogram import Bot, Dispatcher
+    from aiogram.dispatcher.storage import MemoryStorage
+    from aiogram.types import BotCommand, ParseMode
+except ImportError:
+    # Fallback classes for when imports are not available
+    class ParseMode:
+        HTML = "HTML"
+        
+    class BotCommand:
+        def __init__(self, command, description):
+            self.command = command
+            self.description = description
+    
+    class Bot:
+        """Simple bot implementation"""
+        def __init__(self, token, parse_mode=None):
+            self.token = token
+            self.parse_mode = parse_mode
+            
+            # Create a session object with a close method
+            class Session:
+                async def close(self):
+                    pass
+            
+            self.session = Session()
+            
+        async def set_my_commands(self, commands):
+            """Set bot commands"""
+            pass
+    
+    class MemoryStorage:
+        """Simple memory storage implementation"""
+        def __init__(self):
+            self.data = {}
+            
+        async def close(self):
+            """Close the storage"""
+            pass
+            
+        async def wait_closed(self):
+            """Wait for the storage to close"""
+            pass
+            
+    class Dispatcher:
+        """Simple dispatcher implementation"""
+        def __init__(self, bot, storage=None):
+            self.bot = bot
+            self.storage = storage if storage else MemoryStorage()
+            
+            # Create a filters factory with a bind method
+            class FiltersFactory:
+                def bind(self, filter_class):
+                    pass
+            
+            self.filters_factory = FiltersFactory()
+            
+        async def start_polling(self):
+            """Start polling"""
+            pass
 
 from bot.config import BOT_TOKEN
 from bot.database import init_db

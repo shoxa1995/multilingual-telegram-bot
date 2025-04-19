@@ -6,7 +6,13 @@ from datetime import datetime
 from sqlalchemy import Column, Integer, String, Boolean, DateTime, Enum, Text, ForeignKey, func, select
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
+try:
+    from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
+    USING_ASYNC = True
+except ImportError:
+    from sqlalchemy import create_engine
+    from sqlalchemy.orm import Session
+    USING_ASYNC = False
 
 from bot.config import DB_URL
 
@@ -14,8 +20,13 @@ from bot.config import DB_URL
 Base = declarative_base()
 
 # Set up SQLAlchemy engine
-engine = create_async_engine(DB_URL, echo=True)
-async_session = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
+if USING_ASYNC:
+    engine = create_async_engine(DB_URL, echo=True)
+    async_session = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
+else:
+    # Use synchronous engine as fallback
+    engine = create_engine(DB_URL, echo=True)
+    sync_session = sessionmaker(engine, expire_on_commit=False)
 
 
 class User(Base):
