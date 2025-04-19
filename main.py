@@ -265,11 +265,24 @@ def schedule():
     # Get all active staff members for schedule management
     staff_list = Staff.query.filter_by(is_active=True).all()
     
-    # Get existing schedules for each staff
+    # Get existing schedules for each staff, convert to JSON-serializable dict
     schedules = {}
     for staff in staff_list:
         staff_schedules = StaffSchedule.query.filter_by(staff_id=staff.id).all()
-        schedules[staff.id] = {s.weekday: s for s in staff_schedules}
+        
+        # Create a JSON-serializable dict for each schedule
+        staff_schedule_dict = {}
+        for s in staff_schedules:
+            staff_schedule_dict[str(s.weekday)] = {
+                'id': s.id,
+                'staff_id': s.staff_id,
+                'weekday': s.weekday,
+                'start_time': s.start_time,
+                'end_time': s.end_time,
+                'is_working_day': s.is_working_day
+            }
+        
+        schedules[str(staff.id)] = staff_schedule_dict
     
     return render_template('schedule.html', title="Schedule Management", 
                            staff_list=staff_list, schedules=schedules)
