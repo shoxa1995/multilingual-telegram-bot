@@ -1,0 +1,179 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-md-8">
+            <h1>{{ title }}</h1>
+            <div class="card mt-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Booking Details</h5>
+                    <span class="badge status-{{ booking.status.value }}">{{ booking.status.value.upper() }}</span>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <strong>Client:</strong>
+                        </div>
+                        <div class="col-md-8">
+                            {{ booking.user.first_name }} {{ booking.user.last_name or '' }}
+                            {% if booking.user.username %}<span class="text-muted">(@{{ booking.user.username }})</span>{% endif %}
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <strong>Phone:</strong>
+                        </div>
+                        <div class="col-md-8">
+                            {{ booking.user.phone_number or 'Not provided' }}
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <strong>Staff:</strong>
+                        </div>
+                        <div class="col-md-8">
+                            {{ booking.staff.name }}
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <strong>Date & Time:</strong>
+                        </div>
+                        <div class="col-md-8">
+                            {{ booking.booking_date.strftime('%d %B %Y, %H:%M') }}
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <strong>Duration:</strong>
+                        </div>
+                        <div class="col-md-8">
+                            {{ booking.duration_minutes }} minutes
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <strong>Price:</strong>
+                        </div>
+                        <div class="col-md-8">
+                            {{ (booking.price / 100) | round(2) }} UZS
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <strong>Payment ID:</strong>
+                        </div>
+                        <div class="col-md-8">
+                            {{ booking.payment_id or 'Not paid yet' }}
+                        </div>
+                    </div>
+                    {% if booking.zoom_meeting_id %}
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <strong>Zoom Meeting:</strong>
+                        </div>
+                        <div class="col-md-8">
+                            ID: {{ booking.zoom_meeting_id }}<br>
+                            {% if booking.zoom_join_url %}
+                            <a href="{{ booking.zoom_join_url }}" target="_blank" class="btn btn-sm btn-primary mt-1">
+                                <i class="fas fa-video"></i> Join Meeting
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% if booking.bitrix_event_id %}
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <strong>Bitrix24 Event:</strong>
+                        </div>
+                        <div class="col-md-8">
+                            ID: {{ booking.bitrix_event_id }}
+                        </div>
+                    </div>
+                    {% endif %}
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <strong>Created:</strong>
+                        </div>
+                        <div class="col-md-8">
+                            {{ booking.created_at.strftime('%d %B %Y, %H:%M') }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Actions</h5>
+                </div>
+                <div class="card-body">
+                    <form action="{{ url_for('update_booking_status', booking_id=booking.id) }}" method="POST">
+                        <div class="mb-3">
+                            <label for="status" class="form-label">Change Status</label>
+                            <select class="form-select" id="status" name="status">
+                                {% for status in booking_statuses %}
+                                <option value="{{ status.value }}" {% if booking.status == status %}selected{% endif %}>
+                                    {{ status.value.upper() }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <!-- Refund option -->
+                        {% if booking.status == booking_statuses.CONFIRMED and booking.payment_id %}
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="is_refund" name="is_refund" value="1">
+                            <label class="form-check-label" for="is_refund">
+                                Process as refund
+                            </label>
+                            <div class="form-text">
+                                If checked and status is changed to CANCELLED, a refund will be processed. The client will be notified.
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        <button type="submit" class="btn btn-primary">Update Status</button>
+                    </form>
+                    <hr>
+                    <button class="btn btn-danger delete-btn w-100" data-id="{{ booking.id }}" data-type="bookings">
+                        <i class="fas fa-trash"></i> Delete Booking
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    $(document).ready(function() {
+        $('.delete-btn').click(function() {
+            const id = $(this).data('id');
+            const type = $(this).data('type');
+            
+            if (confirm('Are you sure you want to delete this booking? This action cannot be undone.')) {
+                $.ajax({
+                    url: `/${type}/delete/${id}`,
+                    type: 'POST',
+                    success: function(result) {
+                        window.location.href = '/bookings';
+                    }
+                });
+            }
+        });
+        
+        // Show warning when selecting "cancelled" if payment exists
+        $('#status').change(function() {
+            if ($(this).val() === 'cancelled' && {{ 'true' if booking.payment_id else 'false' }}) {
+                $('#is_refund').closest('.form-check').addClass('alert alert-warning');
+            } else {
+                $('#is_refund').closest('.form-check').removeClass('alert alert-warning');
+            }
+        });
+    });
+</script>
+{% endblock %}

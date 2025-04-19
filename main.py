@@ -250,13 +250,49 @@ def update_booking_status(booking_id):
         flash('No status provided', 'danger')
         return redirect(url_for('booking_detail', booking_id=booking_id))
     
+    # Check if this is a refund request
+    is_refund = request.form.get('is_refund') == '1'
+    
     try:
         status_enum = BookingStatus(new_status)
-        booking.status = status_enum
-        db.session.commit()
-        flash('Booking status updated successfully', 'success')
+        
+        # Handle refund if requested and booking is currently confirmed
+        if is_refund and booking.status == BookingStatus.CONFIRMED and status_enum == BookingStatus.CANCELLED:
+            # Only process refund if payment ID exists
+            if not booking.payment_id:
+                flash('Cannot refund: No payment found for this booking', 'danger')
+                return redirect(url_for('booking_detail', booking_id=booking_id))
+            
+            # Call the refund processing function asynchronously
+            import asyncio
+            from bot.utils.payment import process_refund
+            from bot.main import bot
+            
+            # We need to run the async refund function in a sync context
+            try:
+                loop = asyncio.get_event_loop()
+            except RuntimeError:
+                # If no event loop is available, create a new one
+                loop = asyncio.new_event_loop()
+                asyncio.set_event_loop(loop)
+            
+            # Process the refund
+            refund_success = loop.run_until_complete(process_refund(bot, booking_id))
+            
+            if refund_success:
+                flash('Booking cancelled and refund initiated successfully', 'success')
+            else:
+                flash('Booking status updated, but refund processing failed', 'warning')
+                # Still continue with the status change
+        else:
+            # Normal status update without refund
+            booking.status = status_enum
+            db.session.commit()
+            flash('Booking status updated successfully', 'success')
     except ValueError:
         flash('Invalid status', 'danger')
+    except Exception as e:
+        flash(f'Error processing request: {str(e)}', 'danger')
     
     return redirect(url_for('booking_detail', booking_id=booking_id))
 
