@@ -72,7 +72,8 @@ async def get_zoom_access_token() -> Optional[str]:
 async def create_zoom_meeting(
     topic: str,
     start_time: datetime,
-    duration_minutes: int
+    duration_minutes: int,
+    user_email: Optional[str] = None
 ) -> Optional[Dict[str, Any]]:
     """
     Create a Zoom meeting.
@@ -81,6 +82,7 @@ async def create_zoom_meeting(
         topic: Meeting topic/title
         start_time: Start time of the meeting
         duration_minutes: Duration in minutes
+        user_email: Optional email address for the participant (for registration)
         
     Returns:
         Dictionary with meeting details or None if failed

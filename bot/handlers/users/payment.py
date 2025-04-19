@@ -8,8 +8,15 @@ from aiogram import Router, F
 from aiogram.filters import CommandStart
 from aiogram.types import Message, PreCheckoutQuery, LabeledPrice, CallbackQuery, SuccessfulPayment
 from aiogram.fsm.context import FSMContext
+from sqlalchemy import select
 
-from bot.database import get_user_language_async, get_booking_by_id_async, update_booking_payment_completed_async
+from bot.database import (
+    get_user_language_async, 
+    get_booking_by_id_async, 
+    update_booking_payment_completed_async,
+    Booking,
+    sync_session
+)
 from bot.utils.payment import CLICK_PAYMENT_TOKEN, process_pre_checkout, process_successful_payment
 from bot.middlewares.i18n import _, i18n
 from bot.utils.zoom import create_zoom_meeting
@@ -90,21 +97,55 @@ async def successful_payment_handler(message: Message, state: FSMContext):
                 payment_id=payment.telegram_payment_charge_id
             )
             
-            # Create Zoom meeting
-            zoom_result = await create_zoom_meeting(
-                topic=f"Appointment with {booking.staff.name}",
-                start_time=booking.booking_date,
-                duration_minutes=booking.duration_minutes,
-                email=None  # Optional: provide user email if available
-            )
+            # Create Zoom meeting with error handling
+            try:
+                zoom_result = await create_zoom_meeting(
+                    topic=f"Appointment with {booking.staff.name}",
+                    start_time=booking.booking_date,
+                    duration_minutes=booking.duration_minutes,
+                    user_email=booking.user.email if hasattr(booking.user, 'email') else None
+                )
+                
+                if zoom_result and 'join_url' in zoom_result:
+                    # Update booking with Zoom meeting info
+                    with sync_session() as session:
+                        query = select(Booking).where(Booking.id == booking_id)
+                        result = session.execute(query)
+                        booking_obj = result.scalar_one_or_none()
+                        if booking_obj:
+                            booking_obj.zoom_meeting_id = zoom_result.get('id')
+                            booking_obj.zoom_join_url = zoom_result.get('join_url')
+                            session.commit()
+                            logger.info(f"Updated booking {booking_id} with Zoom meeting info")
+                else:
+                    logger.warning(f"Zoom meeting creation failed for booking {booking_id}")
+            except Exception as e:
+                logger.exception(f"Error creating Zoom meeting: {e}")
             
-            # Create Bitrix24 event
-            bitrix_result = await create_bitrix_event(
-                user_id=booking.user.id,
-                name=f"Appointment with {booking.user.first_name}",
-                start_time=booking.booking_date,
-                duration_minutes=booking.duration_minutes
-            )
+            # Create Bitrix24 event with error handling
+            try:
+                bitrix_result = await create_bitrix_event(
+                    user_id=booking.user.telegram_id,
+                    name=f"Appointment: {booking.user.first_name or 'Client'} - {booking.staff.name}",
+                    start_time=booking.booking_date,
+                    duration_minutes=booking.duration_minutes,
+                    responsible_id=booking.staff.bitrix_user_id if booking.staff.bitrix_user_id else None
+                )
+                
+                if bitrix_result and 'event_id' in bitrix_result:
+                    # Update booking with Bitrix event info
+                    with sync_session() as session:
+                        query = select(Booking).where(Booking.id == booking_id)
+                        result = session.execute(query)
+                        booking_obj = result.scalar_one_or_none()
+                        if booking_obj:
+                            booking_obj.bitrix_event_id = bitrix_result.get('event_id')
+                            session.commit()
+                            logger.info(f"Updated booking {booking_id} with Bitrix event info")
+                else:
+                    logger.warning(f"Bitrix event creation failed for booking {booking_id}")
+            except Exception as e:
+                logger.exception(f"Error creating Bitrix event: {e}")
             
             # Notify admin about new booking
             await notify_admin_about_booking(booking)
