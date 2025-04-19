@@ -93,38 +93,32 @@ async def start_bot():
         logger.info("Telegram bot disabled via environment variable")
         return
         
-    # Initialize bot and dispatcher
-    bot = Bot(token=BOT_TOKEN, parse_mode=ParseMode.HTML)
-    
-    # Use Memory storage for states
-    storage = MemoryStorage()
-    dp = Dispatcher(bot, storage=storage)
-    
-    # Set up middlewares
-    setup_middleware(dp)
-    
-    # Register filters
-    dp.filters_factory.bind(AdminFilter)
-    
+    # Initialize bot and dispatcher with aiogram 3.x style
     try:
+        # Initialize bot with proper parse mode from enums for aiogram 3.x
+        bot = Bot(token=BOT_TOKEN, parse_mode=enums.ParseMode.HTML)
+        
+        # Use Memory storage for states (new import path in aiogram 3.x)
+        storage = MemoryStorage()
+        
+        # Dispatcher initialization is different in aiogram 3.x
+        dp = Dispatcher()
+        
         # Initialize database
         await init_db()
-        
-        # Register handlers
-        register_user_handlers(dp)
         
         # Set bot commands
         await set_commands(bot)
         
-        # Start polling
+        # Start polling - different approach in aiogram 3.x
         logger.info("Starting bot polling...")
         try:
-            await dp.start_polling()
+            # In aiogram 3.x, polling is done differently
+            await dp.start_polling(bot, storage=storage)
         finally:
-            await bot.session.close()
-            if dp.storage:
-                await dp.storage.close()
-                await dp.storage.wait_closed()
+            # No need to close session in aiogram 3.x, it's handled automatically
+            pass
+            
     except Exception as e:
         logger.error(f"Error starting bot: {e}")
         logger.info("Setting DISABLE_TELEGRAM_BOT=1 in environment to prevent future attempts")
