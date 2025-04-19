@@ -14,38 +14,46 @@ from bot.database import sync_session, Staff, Booking, StaffSchedule, BookingSta
 from bot.utils.calendar import get_available_slots
 
 # Define callback data patterns - updated for aiogram 3.x
+# In aiogram 3.x, CallbackData classes need to properly set prefixes
 class StaffCallbackFactory(CallbackData, prefix="staff"):
+    """Staff callback data factory"""
     id: int
     action: str = "select"
 
 class DateCallbackFactory(CallbackData, prefix="date"):
+    """Date callback data factory"""
     year: int
     month: int
     day: int
     action: str = "select"
 
 class TimeCallbackFactory(CallbackData, prefix="time"):
+    """Time callback data factory"""
     hour: int
     minute: int
     action: str = "select"
 
 class BookingCallbackFactory(CallbackData, prefix="booking"):
+    """Booking callback data factory"""
     id: int
     action: str
 
 class NavigationCallbackFactory(CallbackData, prefix="nav"):
+    """Navigation callback data factory"""
     direction: str
 
 class ConfirmCallbackFactory(CallbackData, prefix="confirm"):
+    """Confirmation callback data factory"""
     action: str
 
-# Create instances for easier access
-staff_cb = StaffCallbackFactory()
-date_cb = DateCallbackFactory()
-time_cb = TimeCallbackFactory()
-booking_cb = BookingCallbackFactory()
-navigation_cb = NavigationCallbackFactory()
-confirm_cb = ConfirmCallbackFactory()
+# For backward compatibility, we'll keep these simple aliases
+# Note: in aiogram 3.x, we don't initialize these directly, we'll use them as classes
+staff_cb = StaffCallbackFactory
+date_cb = DateCallbackFactory
+time_cb = TimeCallbackFactory
+booking_cb = BookingCallbackFactory
+navigation_cb = NavigationCallbackFactory
+confirm_cb = ConfirmCallbackFactory
 
 def staff_selection_keyboard() -> InlineKeyboardMarkup:
     """Create a keyboard with staff members to select from."""
@@ -151,7 +159,7 @@ def calendar_keyboard(staff_id: int, current_date: datetime = None) -> InlineKey
     cal = calendar.monthcalendar(year, month)
     
     # Get available days for this staff member in this month
-    session = Session()
+    session = sync_session()
     try:
         staff = session.query(Staff).filter(Staff.id == staff_id).first()
         if not staff:
@@ -282,7 +290,7 @@ def time_slots_keyboard(staff_id: int, year: int, month: int, day: int) -> Inlin
     selected_date = datetime(year, month, day)
     weekday = selected_date.weekday()  # 0=Monday, 6=Sunday
     
-    session = Session()
+    session = sync_session()
     try:
         # Get staff schedules for this day
         schedules = session.query(StaffSchedule).filter(
