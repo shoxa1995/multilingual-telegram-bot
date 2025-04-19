@@ -1,2 +1,3 @@
 #!/bin/bash
-python3 bot/main.py
+cd $(dirname $0)
+python3 -m bot.main
