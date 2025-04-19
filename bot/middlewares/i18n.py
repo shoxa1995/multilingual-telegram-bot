@@ -4,7 +4,8 @@ Simple translation utility for the Telegram bot.
 import gettext
 import os
 from functools import lru_cache
-from typing import Dict, Optional, Any
+from pathlib import Path
+from typing import Dict, Optional, Any, Union
 
 from bot.config import LOCALES_DIR, I18N_DOMAIN, DEFAULT_LANGUAGE, LANGUAGES
 
@@ -12,7 +13,7 @@ from bot.config import LOCALES_DIR, I18N_DOMAIN, DEFAULT_LANGUAGE, LANGUAGES
 os.makedirs(LOCALES_DIR, exist_ok=True)
 
 # Dictionary to store gettext translations
-_translations: Dict[str, gettext.GNUTranslations] = {}
+_translations: Dict[str, Any] = {}
 
 
 class I18n:
@@ -21,20 +22,20 @@ class I18n:
     Simplified version that maintains compatibility with middlewares.
     """
     
-    def __init__(self, domain: str = I18N_DOMAIN, path: str = LOCALES_DIR, default_locale: str = DEFAULT_LANGUAGE):
+    def __init__(self, domain: str = I18N_DOMAIN, path: Union[str, Path] = LOCALES_DIR, default_locale: str = DEFAULT_LANGUAGE):
         self.domain = domain
-        self.path = path
+        self.path = str(path)  # Convert Path to string if needed
         self.default_locale = default_locale
         self.current_locale = default_locale
         
-    async def get_locale(self, user_id: Optional[int] = None) -> str:
+    def get_locale(self, user_id: Optional[int] = None) -> str:
         """
-        Get locale for user
+        Get locale for user - synchronous version for aiogram 3.x
         """
         if user_id is not None:
             # Try to get user's language from database
-            from bot.database import get_user_language
-            language = await get_user_language(user_id)
+            from bot.database import get_user_language_sync
+            language = get_user_language_sync(user_id)
             if language:
                 return language
         
@@ -57,7 +58,7 @@ i18n = I18n()
 
 
 @lru_cache(maxsize=128)
-def get_translation(language: str):
+def get_translation(language: str) -> Any:
     """
     Get a translation for a specific language.
     """
@@ -82,7 +83,8 @@ def get_translation(language: str):
             except FileNotFoundError:
                 # Fallback to NullTranslation if no translations are found
                 translation = gettext.NullTranslations()
-                _translations[language] = translation
+                # Use type ignore to avoid LSP issues here
+                _translations[language] = translation  # type: ignore
     
     return _translations[language]
 
@@ -95,22 +97,22 @@ def _(text: str, language: str = DEFAULT_LANGUAGE) -> str:
     return translation.gettext(text)
 
 
-async def get_user_language(user):
+def get_user_language_sync(user) -> str:
     """
-    Get the language for a user, either from the database or from the user's Telegram settings.
+    Get the language for a user (synchronous version)
     """
-    from bot.database import get_user_language
+    from bot.database import get_user_language_sync
     
     if not user:
         return DEFAULT_LANGUAGE
     
     # Try to get the user's language from the database
-    db_language = await get_user_language(user.id)
+    db_language = get_user_language_sync(user.id)
     if db_language:
         return db_language
     
     # Fallback to the user's Telegram language
-    if user.language_code in LANGUAGES:
+    if hasattr(user, 'language_code') and user.language_code in LANGUAGES:
         return user.language_code
     
     # Fallback to default language
@@ -119,14 +121,13 @@ async def get_user_language(user):
 
 def setup_middleware(dp=None):
     """
-    Placeholder for middleware setup to maintain API compatibility.
+    Initializer for translations in aiogram 3.x
     
     In aiogram 3.x, middleware is registered differently, so we keep this 
     function just for API compatibility. We make the dp parameter optional
     to allow calling this function without a dispatcher during initialization.
     """
-    # No middleware is used in the current implementation
-    # Just initialize translations to ensure they're available
+    # Initialize translations to ensure they're available
     for lang in LANGUAGES.keys():
         get_translation(lang)
     

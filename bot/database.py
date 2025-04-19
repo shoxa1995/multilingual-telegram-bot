@@ -182,6 +182,9 @@ def get_user_language(telegram_id: int) -> str:
         result = session.execute(query)
         language = result.scalar_one_or_none()
         return language
+        
+# Alias for i18n compatibility
+get_user_language_sync = get_user_language
 
 
 def get_or_create_user(user_data):

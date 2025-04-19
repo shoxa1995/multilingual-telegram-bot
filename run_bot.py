@@ -36,6 +36,12 @@ if __name__ == "__main__":
         
     logger.info("Starting Telegram bot with aiogram 3.x")
     
-    # Run the bot
-    exit_code = asyncio.run(main())
-    sys.exit(exit_code)
+    try:
+        # Run the bot
+        exit_code = asyncio.run(main())
+        sys.exit(exit_code)
+    except (KeyboardInterrupt, SystemExit):
+        logger.info("Bot stopped!")
+    except Exception as e:
+        logger.error(f"Unexpected error: {e}")
+        sys.exit(1)
