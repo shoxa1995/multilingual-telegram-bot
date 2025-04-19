@@ -81,8 +81,11 @@ def staff_selection_keyboard() -> InlineKeyboardMarkup:
     
     session = sync_session()
     try:
-        # Get all active staff members
-        staff_members = session.query(Staff).filter(Staff.is_active == True).all()
+        # Get all active staff members using SQLAlchemy 2.0 query pattern
+        from sqlalchemy import select
+        query = select(Staff).where(Staff.is_active == True)
+        result = session.execute(query)
+        staff_members = result.scalars().all()
         
         for staff in staff_members:
             markup.add(
@@ -181,12 +184,20 @@ def calendar_keyboard(staff_id: int, current_date: datetime = None) -> InlineKey
     # Get available days for this staff member in this month
     session = sync_session()
     try:
-        staff = session.query(Staff).filter(Staff.id == staff_id).first()
+        from sqlalchemy import select
+        
+        # Get staff using SQLAlchemy 2.0 pattern
+        staff_query = select(Staff).where(Staff.id == staff_id)
+        staff_result = session.execute(staff_query)
+        staff = staff_result.scalar_one_or_none()
+        
         if not staff:
             return markup  # Return empty calendar if staff doesn't exist
             
-        # Get staff schedule
-        staff_schedules = session.query(StaffSchedule).filter(StaffSchedule.staff_id == staff_id).all()
+        # Get staff schedule using SQLAlchemy 2.0 pattern
+        schedule_query = select(StaffSchedule).where(StaffSchedule.staff_id == staff_id)
+        schedule_result = session.execute(schedule_query)
+        staff_schedules = schedule_result.scalars().all()
         
         # Get all bookings for this staff in this month
         start_date = datetime(year, month, 1)
@@ -195,12 +206,14 @@ def calendar_keyboard(staff_id: int, current_date: datetime = None) -> InlineKey
         else:
             end_date = datetime(year, month + 1, 1)
             
-        bookings = session.query(Booking).filter(
+        booking_query = select(Booking).where(
             Booking.staff_id == staff_id,
             Booking.booking_date >= start_date,
             Booking.booking_date < end_date,
             Booking.status.in_([BookingStatus.CONFIRMED, BookingStatus.PAYMENT_PENDING])
-        ).all()
+        )
+        booking_result = session.execute(booking_query)
+        bookings = booking_result.scalars().all()
         
     finally:
         session.close()
@@ -312,19 +325,25 @@ def time_slots_keyboard(staff_id: int, year: int, month: int, day: int) -> Inlin
     
     session = sync_session()
     try:
-        # Get staff schedules for this day
-        schedules = session.query(StaffSchedule).filter(
+        from sqlalchemy import select
+        
+        # Get staff schedules for this day using SQLAlchemy 2.0 pattern
+        schedule_query = select(StaffSchedule).where(
             StaffSchedule.staff_id == staff_id,
             StaffSchedule.weekday == weekday
-        ).all()
+        )
+        schedule_result = session.execute(schedule_query)
+        schedules = schedule_result.scalars().all()
         
-        # Get bookings for this day
-        bookings = session.query(Booking).filter(
+        # Get bookings for this day using SQLAlchemy 2.0 pattern
+        booking_query = select(Booking).where(
             Booking.staff_id == staff_id,
             Booking.booking_date >= datetime(year, month, day),
             Booking.booking_date < datetime(year, month, day) + timedelta(days=1),
             Booking.status.in_([BookingStatus.CONFIRMED, BookingStatus.PAYMENT_PENDING])
-        ).all()
+        )
+        booking_result = session.execute(booking_query)
+        bookings = booking_result.scalars().all()
         
         # Get available time slots
         all_slots = []

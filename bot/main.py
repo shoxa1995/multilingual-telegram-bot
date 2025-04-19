@@ -9,6 +9,8 @@ try:
     from aiogram import Bot, Dispatcher, enums
     from aiogram.fsm.storage.memory import MemoryStorage
     from aiogram.types import BotCommand
+    # For aiogram 3.7.0+, import the DefaultBotProperties
+    from aiogram.client.default import DefaultBotProperties
 except ImportError:
     # Fallback classes for when imports are not available
     class enums:
@@ -24,6 +26,10 @@ except ImportError:
         """Simple bot implementation"""
         def __init__(self, token, parse_mode=None):
             self.token = token
+            self.parse_mode = parse_mode
+    
+    class DefaultBotProperties:
+        def __init__(self, parse_mode=None):
             self.parse_mode = parse_mode
             
             # Create a session object with a close method
@@ -131,13 +137,14 @@ async def start_bot():
         
     # Initialize bot and dispatcher with aiogram 3.x style
     try:
-        # Bot initialization with proper syntax for aiogram 3.x
-        bot = Bot(token=BOT_TOKEN, parse_mode=enums.ParseMode.HTML)
+        # Bot initialization with DefaultBotProperties for aiogram 3.7.0+
+        default_bot_properties = DefaultBotProperties(parse_mode=enums.ParseMode.HTML)
+        bot = Bot(token=BOT_TOKEN, default=default_bot_properties)
         
         # Use Memory storage for states
         storage = MemoryStorage()
         
-        # Dispatcher initialization for aiogram 3.x
+        # Dispatcher initialization for aiogram 3.x with bot instance
         dp = Dispatcher(storage=storage)
         
         # Initialize database
