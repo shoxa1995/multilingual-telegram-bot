@@ -381,18 +381,28 @@ async def booking_confirmation_handler(callback_query: CallbackQuery, state: FSM
         )
         
         # Create payment invoice
-        invoice_payload = await create_invoice(
+        invoice_result = await create_invoice(
             bot=callback_query.bot,
             chat_id=callback_query.from_user.id,
             booking_id=booking.id
         )
         
-        if not invoice_payload:
+        if not invoice_result:
             await callback_query.message.edit_text(
                 _(
                     "❌ Failed to create payment invoice. Your booking has been created "
                     "but you will need to pay later. View your bookings with /mybookings."
                 )
+            )
+        elif invoice_result.get("url"):
+            # Send a clickable link for web browser payment
+            await callback_query.bot.send_message(
+                chat_id=callback_query.from_user.id,
+                text=_(
+                    "💳 You can also pay using this link in your web browser:\n\n"
+                    "{url}"
+                ).format(url=invoice_result["url"]),
+                disable_web_page_preview=False
             )
     else:
         # Free booking
@@ -508,16 +518,27 @@ async def booking_action_handler(callback_query: CallbackQuery, callback_data: D
     
     elif action == "pay":
         # Create payment invoice
-        invoice_payload = await create_invoice(
+        invoice_result = await create_invoice(
             bot=callback_query.bot,
             chat_id=callback_query.from_user.id,
             booking_id=booking_id
         )
         
-        if invoice_payload:
+        if invoice_result:
             await callback_query.message.edit_text(
                 _("💰 Payment invoice has been sent.")
             )
+            
+            # Send web payment link if available
+            if invoice_result.get("url"):
+                await callback_query.bot.send_message(
+                    chat_id=callback_query.from_user.id,
+                    text=_(
+                        "💳 You can also pay using this link in your web browser:\n\n"
+                        "{url}"
+                    ).format(url=invoice_result["url"]),
+                    disable_web_page_preview=False
+                )
         else:
             await callback_query.message.edit_text(
                 _("❌ Failed to create payment invoice. Please try again later.")

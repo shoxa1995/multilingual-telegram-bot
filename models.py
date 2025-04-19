@@ -80,7 +80,8 @@ class StaffSchedule(db.Model):
         return f'<StaffSchedule {self.staff.name if self.staff else "Unknown"} - Day {self.weekday}>'
 
 # Enum for booking status
-class BookingStatus(enum.Enum):
+# Using string values for easier compatibility
+class BookingStatus(str, enum.Enum):
     PENDING = "pending"
     PAYMENT_PENDING = "payment_pending"
     CONFIRMED = "confirmed"

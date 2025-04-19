@@ -10,8 +10,8 @@ from aiogram import Bot
 from aiogram.types import LabeledPrice, ShippingOption
 
 from bot.database import (
-    get_booking_by_id, get_staff_by_id, update_booking_payment_pending,
-    update_booking_payment_completed
+    get_booking_by_id, get_staff_by_id, async_session, BookingStatus, Booking,
+    select, update_booking_payment_completed
 )
 
 # Click UZ payment provider tokens from Telegram Bot Father
@@ -22,10 +22,10 @@ CLICK_TEST_TOKEN = os.environ.get("CLICK_TEST_TOKEN", "398062629:TEST:999999999_
 PAYMENT_PROVIDER_TOKEN = CLICK_TEST_TOKEN
 
 
-async def create_invoice(bot: Bot, chat_id: int, booking_id: int) -> Optional[str]:
+async def create_invoice(bot: Bot, chat_id: int, booking_id: int) -> Optional[dict]:
     """
     Create a payment invoice for a booking and send it to the user.
-    Returns the invoice payload if successful, None otherwise.
+    Returns a dict with invoice payload and URL if successful, None otherwise.
     """
     # Get the booking details
     booking = await get_booking_by_id(booking_id)
@@ -43,36 +43,86 @@ async def create_invoice(bot: Bot, chat_id: int, booking_id: int) -> Optional[st
     # Format the booking date
     booking_date_str = booking.booking_date.strftime("%Y-%m-%d %H:%M")
     
-    # Create the invoice
-    await bot.send_invoice(
-        chat_id=chat_id,
-        title=f"Booking with {staff.name}",
-        description=f"Appointment on {booking_date_str} ({booking.duration_minutes} minutes)",
-        payload=invoice_payload,
-        provider_token=PAYMENT_PROVIDER_TOKEN,  # Click UZ token from Bot Father
-        currency="UZS",  # Uzbekistan Som
-        prices=[
-            LabeledPrice(
-                label=f"Appointment with {staff.name}", 
-                amount=booking.price
-            )
-        ],
-        start_parameter="booking_payment",
-        need_name=True,
-        need_phone_number=True,
-        need_email=True,
-        need_shipping_address=False,
-        is_flexible=False,
-        disable_notification=False,
-        protect_content=True
-    )
+    title = f"Booking with {staff.name}"
+    description = f"Appointment on {booking_date_str} ({booking.duration_minutes} minutes)"
+    
+    prices = [
+        LabeledPrice(
+            label=f"Appointment with {staff.name}", 
+            amount=booking.price
+        )
+    ]
+    
+    # First create an invoice link for web browser payments
+    try:
+        invoice_link = await bot.create_invoice_link(
+            title=title,
+            description=description,
+            payload=invoice_payload,
+            provider_token=PAYMENT_PROVIDER_TOKEN,
+            currency="UZS",
+            prices=prices,
+            max_tip_amount=10000,
+            suggested_tip_amounts=[1000, 2000, 5000, 10000],
+            need_name=True,
+            need_phone_number=True,
+            need_email=True,
+            need_shipping_address=False,
+            is_flexible=False
+        )
+    except Exception as e:
+        print(f"Error creating invoice link: {e}")
+        invoice_link = None
+    
+    # Now send the invoice directly in Telegram
+    try:
+        await bot.send_invoice(
+            chat_id=chat_id,
+            title=title,
+            description=description,
+            payload=invoice_payload,
+            provider_token=PAYMENT_PROVIDER_TOKEN,  # Click UZ token from Bot Father
+            currency="UZS",  # Uzbekistan Som
+            prices=prices,
+            start_parameter="booking_payment",
+            need_name=True,
+            need_phone_number=True,
+            need_email=True,
+            need_shipping_address=False,
+            is_flexible=False,
+            disable_notification=False,
+            protect_content=True
+        )
+    except Exception as e:
+        print(f"Error sending invoice: {e}")
+        if not invoice_link:
+            return None
     
     # Update the booking to payment pending status
-    success = await update_booking_payment_pending(booking_id, invoice_payload)
+    async def update_db():
+        async with async_session() as session:
+            query = select(Booking).where(Booking.id == booking_id)
+            result = await session.execute(query)
+            booking = result.scalar_one_or_none()
+            
+            if booking:
+                booking.status = BookingStatus.PAYMENT_PENDING
+                booking.invoice_payload = invoice_payload
+                if invoice_link:
+                    booking.invoice_url = invoice_link
+                await session.commit()
+                return True
+            
+            return False
+    
+    success = await update_db()
     if not success:
         return None
     
-    return invoice_payload
+    return {
+        "payload": invoice_payload,
+        "url": invoice_link
+    }
 
 
 async def verify_payment(payment_id: str, invoice_payload: str) -> Optional[int]:

@@ -78,7 +78,7 @@ class StaffSchedule(Base):
         return f"<StaffSchedule(staff_id={self.staff_id}, weekday={self.weekday}, {self.start_time}-{self.end_time})>"
 
 
-class BookingStatus(enum.Enum):
+class BookingStatus(str, enum.Enum):
     """Enum for booking status"""
     PENDING = "pending"
     PAYMENT_PENDING = "payment_pending"
@@ -103,6 +103,7 @@ class Booking(Base):
     zoom_join_url = Column(String(255))
     bitrix_event_id = Column(String(100))
     invoice_payload = Column(String(255))  # Telegram payment invoice payload
+    invoice_url = Column(String(512))  # Telegram payment invoice URL for web browser payments
     created_at = Column(DateTime, server_default=func.now())
     updated_at = Column(DateTime, onupdate=func.now())
 
