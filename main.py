@@ -138,13 +138,208 @@ def staff():
 def bookings():
     if 'user_id' not in session:
         return redirect(url_for('login'))
-    return render_template('bookings.html', title="Bookings")
+    
+    from models import Booking, BookingStatus
+    
+    # Get query parameters for filtering
+    status = request.args.get('status')
+    staff_id = request.args.get('staff_id', type=int)
+    date_from = request.args.get('date_from')
+    date_to = request.args.get('date_to')
+    search = request.args.get('search')
+    page = request.args.get('page', 1, type=int)
+    per_page = 10
+    
+    # Base query
+    query = Booking.query
+    
+    # Apply filters
+    if status:
+        try:
+            status_enum = BookingStatus(status)
+            query = query.filter_by(status=status_enum)
+        except ValueError:
+            pass
+    
+    if staff_id:
+        query = query.filter_by(staff_id=staff_id)
+    
+    from datetime import datetime
+    if date_from:
+        try:
+            date_from_obj = datetime.strptime(date_from, '%Y-%m-%d')
+            query = query.filter(Booking.booking_date >= date_from_obj)
+        except ValueError:
+            pass
+    
+    if date_to:
+        try:
+            date_to_obj = datetime.strptime(date_to, '%Y-%m-%d')
+            query = query.filter(Booking.booking_date <= date_to_obj)
+        except ValueError:
+            pass
+    
+    # Paginate results
+    bookings_paginated = query.order_by(Booking.booking_date.desc()).paginate(page=page, per_page=per_page)
+    
+    # Get staff for filter dropdown
+    from models import Staff
+    staff_list = Staff.query.filter_by(is_active=True).all()
+    
+    return render_template('bookings.html', title="Bookings", 
+                           bookings=bookings_paginated.items,
+                           pagination=bookings_paginated,
+                           staff_list=staff_list,
+                           booking_statuses=BookingStatus,
+                           filters={
+                               'status': status,
+                               'staff_id': staff_id,
+                               'date_from': date_from,
+                               'date_to': date_to,
+                               'search': search
+                           })
+
+@app.route('/bookings/<int:booking_id>')
+def booking_detail(booking_id):
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    
+    from models import Booking, BookingStatus
+    
+    # Get booking details
+    booking = Booking.query.get_or_404(booking_id)
+    
+    return render_template('booking_detail.html', title=f"Booking #{booking.id}", 
+                           booking=booking,
+                           booking_statuses=BookingStatus)
+
+@app.route('/bookings/update-status/<int:booking_id>', methods=['POST'])
+def update_booking_status(booking_id):
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    
+    from models import Booking, BookingStatus
+    
+    # Get booking
+    booking = Booking.query.get_or_404(booking_id)
+    
+    # Get new status
+    new_status = request.form.get('status')
+    if not new_status:
+        flash('No status provided', 'danger')
+        return redirect(url_for('booking_detail', booking_id=booking_id))
+    
+    try:
+        status_enum = BookingStatus(new_status)
+        booking.status = status_enum
+        db.session.commit()
+        flash('Booking status updated successfully', 'success')
+    except ValueError:
+        flash('Invalid status', 'danger')
+    
+    return redirect(url_for('booking_detail', booking_id=booking_id))
 
 @app.route('/schedule')
 def schedule():
     if 'user_id' not in session:
         return redirect(url_for('login'))
-    return render_template('schedule.html', title="Schedule Management")
+    
+    from models import Staff, StaffSchedule
+    
+    # Get all active staff members for schedule management
+    staff_list = Staff.query.filter_by(is_active=True).all()
+    
+    # Get existing schedules for each staff
+    schedules = {}
+    for staff in staff_list:
+        staff_schedules = StaffSchedule.query.filter_by(staff_id=staff.id).all()
+        schedules[staff.id] = {s.weekday: s for s in staff_schedules}
+    
+    return render_template('schedule.html', title="Schedule Management", 
+                           staff_list=staff_list, schedules=schedules)
+
+@app.route('/schedule/update', methods=['POST'])
+def update_schedule():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    
+    from models import StaffSchedule
+    
+    staff_id = request.form.get('staff_id', type=int)
+    weekday = request.form.get('weekday', type=int)
+    start_time = request.form.get('start_time')
+    end_time = request.form.get('end_time')
+    is_working_day = 'is_working_day' in request.form
+    
+    # Validate inputs
+    if not all([staff_id, start_time, end_time]) or weekday is None:
+        flash('Missing required schedule information', 'danger')
+        return redirect(url_for('schedule'))
+    
+    # Check if schedule exists
+    schedule = StaffSchedule.query.filter_by(staff_id=staff_id, weekday=weekday).first()
+    
+    if schedule:
+        # Update existing schedule
+        schedule.start_time = start_time
+        schedule.end_time = end_time
+        schedule.is_working_day = is_working_day
+    else:
+        # Create new schedule
+        schedule = StaffSchedule(
+            staff_id=staff_id,
+            weekday=weekday,
+            start_time=start_time,
+            end_time=end_time,
+            is_working_day=is_working_day
+        )
+        db.session.add(schedule)
+    
+    db.session.commit()
+    flash('Schedule updated successfully', 'success')
+    return redirect(url_for('schedule'))
+
+@app.route('/schedule/set-default', methods=['POST'])
+def set_default_schedule():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    
+    from models import StaffSchedule
+    
+    staff_id = request.form.get('staff_id', type=int)
+    
+    if not staff_id:
+        flash('Missing staff information', 'danger')
+        return redirect(url_for('schedule'))
+    
+    # Delete existing schedules first
+    StaffSchedule.query.filter_by(staff_id=staff_id).delete()
+    
+    # Create default schedule (Mon-Fri 9AM-5PM)
+    for weekday in range(5):  # 0-4 (Monday to Friday)
+        schedule = StaffSchedule(
+            staff_id=staff_id,
+            weekday=weekday,
+            start_time="09:00",
+            end_time="17:00",
+            is_working_day=True
+        )
+        db.session.add(schedule)
+    
+    # Add weekend (not working)
+    for weekday in range(5, 7):  # 5-6 (Saturday and Sunday)
+        schedule = StaffSchedule(
+            staff_id=staff_id,
+            weekday=weekday,
+            start_time="09:00",
+            end_time="17:00",
+            is_working_day=False
+        )
+        db.session.add(schedule)
+    
+    db.session.commit()
+    flash('Default schedule applied successfully', 'success')
+    return redirect(url_for('schedule'))
 
 # API endpoints for AJAX requests
 @app.route('/bookings/stats/total')
