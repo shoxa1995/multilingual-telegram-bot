@@ -17,6 +17,12 @@ from aiogram.dispatcher.filters import Command, Text
 from aiogram.utils.callback_data import CallbackData
 
 from helpers import translate_message
+
+# Define a compatibility function for legacy code with the same name as the i18n function
+# This will allow the existing code to work while we migrate to translate_message
+async def _(text, user=None):
+    """Compatibility function for existing code, gradually migrate to translate_message"""
+    return await translate_message(text, user=user)
 from bot.states.booking import BookingStates
 from bot.database import (
     get_or_create_user, update_user_language, get_active_staff,

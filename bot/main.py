@@ -5,12 +5,12 @@ Initializes and starts the bot with all required handlers and middlewares.
 import asyncio
 import logging
 from aiogram import Bot, Dispatcher
-from aiogram.contrib.fsm_storage.redis import RedisStorage2
+from aiogram.dispatcher.storage import MemoryStorage
 from aiogram.types import BotCommand, ParseMode
 
-from bot.config import BOT_TOKEN, REDIS_HOST, REDIS_PORT, REDIS_DB
+from bot.config import BOT_TOKEN
 from bot.database import init_db
-from bot.middlewares.i18n import i18n, setup_middleware
+from bot.middlewares.i18n import setup_middleware
 from bot.filters.admin import AdminFilter
 from bot.handlers.users import register_user_handlers
 
@@ -32,8 +32,8 @@ async def start_bot():
     # Initialize bot and dispatcher
     bot = Bot(token=BOT_TOKEN, parse_mode=ParseMode.HTML)
     
-    # Use Redis for state storage
-    storage = RedisStorage2(host=REDIS_HOST, port=REDIS_PORT, db=REDIS_DB)
+    # Use Memory storage for states
+    storage = MemoryStorage()
     dp = Dispatcher(bot, storage=storage)
     
     # Set up middlewares
