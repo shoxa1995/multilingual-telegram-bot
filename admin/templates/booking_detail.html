@@ -1,0 +1,243 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container-fluid px-4">
+    <h1 class="mt-4">Booking #{{ booking.id }}</h1>
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a href="{{ url_for('index') }}">Dashboard</a></li>
+        <li class="breadcrumb-item"><a href="{{ url_for('bookings') }}">Bookings</a></li>
+        <li class="breadcrumb-item active">Booking #{{ booking.id }}</li>
+    </ol>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-calendar-check me-1"></i>
+                    Booking Details
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <h5>Status</h5>
+                        <span class="badge 
+                            {% if booking.status.value == 'confirmed' %}
+                                status-confirmed
+                            {% elif booking.status.value == 'pending' %}
+                                status-pending
+                            {% elif booking.status.value == 'payment_pending' %}
+                                status-payment-pending
+                            {% elif booking.status.value == 'cancelled' %}
+                                status-cancelled
+                            {% elif booking.status.value == 'completed' %}
+                                status-completed
+                            {% endif %}">
+                            {{ booking.status.value.upper() }}
+                        </span>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <h5>Date and Time</h5>
+                        <p>{{ booking.booking_date.strftime('%d %B %Y, %H:%M') }}</p>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <h5>Duration</h5>
+                        <p>{{ booking.duration_minutes }} minutes</p>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <h5>Price</h5>
+                        <p>{{ booking.price }}</p>
+                    </div>
+                    
+                    {% if booking.payment_id %}
+                    <div class="mb-3">
+                        <h5>Payment ID</h5>
+                        <p>{{ booking.payment_id }}</p>
+                    </div>
+                    {% endif %}
+                    
+                    {% if booking.created_at %}
+                    <div class="mb-3">
+                        <h5>Created</h5>
+                        <p>{{ booking.created_at.strftime('%d %B %Y, %H:%M') }}</p>
+                    </div>
+                    {% endif %}
+                    
+                    {% if booking.updated_at %}
+                    <div class="mb-3">
+                        <h5>Last Updated</h5>
+                        <p>{{ booking.updated_at.strftime('%d %B %Y, %H:%M') }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-user me-1"></i>
+                    Customer Information
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <h5>Name</h5>
+                        <p>{{ booking.user.first_name }} {{ booking.user.last_name }}</p>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <h5>Telegram Username</h5>
+                        <p>{{ booking.user.username or 'Not available' }}</p>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <h5>Phone Number</h5>
+                        <p>{{ booking.user.phone_number or 'Not available' }}</p>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <h5>Language</h5>
+                        <p>{{ booking.user.language }}</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-id-badge me-1"></i>
+                    Staff Information
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <h5>Name</h5>
+                        <p>{{ booking.staff.name }}</p>
+                    </div>
+                    
+                    {% if booking.staff.bitrix_user_id %}
+                    <div class="mb-3">
+                        <h5>Bitrix User ID</h5>
+                        <p>{{ booking.staff.bitrix_user_id }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            {% if booking.zoom_meeting_id or booking.zoom_join_url or booking.bitrix_event_id %}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-video me-1"></i>
+                    Meeting Information
+                </div>
+                <div class="card-body">
+                    {% if booking.zoom_meeting_id %}
+                    <div class="mb-3">
+                        <h5>Zoom Meeting ID</h5>
+                        <p>{{ booking.zoom_meeting_id }}</p>
+                    </div>
+                    {% endif %}
+                    
+                    {% if booking.zoom_join_url %}
+                    <div class="mb-3">
+                        <h5>Zoom Join URL</h5>
+                        <p><a href="{{ booking.zoom_join_url }}" target="_blank">{{ booking.zoom_join_url }}</a></p>
+                    </div>
+                    {% endif %}
+                    
+                    {% if booking.bitrix_event_id %}
+                    <div class="mb-3">
+                        <h5>Bitrix Event ID</h5>
+                        <p>{{ booking.bitrix_event_id }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-cogs me-1"></i>
+            Actions
+        </div>
+        <div class="card-body">
+            <form method="POST" action="{{ url_for('update_booking_status', booking_id=booking.id) }}" class="row g-3">
+                <div class="col-md-6">
+                    <label for="statusSelect" class="form-label">Change Status</label>
+                    <select class="form-select" id="statusSelect" name="status">
+                        {% for status in booking_statuses %}
+                        <option value="{{ status.value }}" {% if booking.status == status %}selected{% endif %}>
+                            {{ status.value.upper() }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-6 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary">Update Status</button>
+                </div>
+            </form>
+            
+            <hr>
+            
+            <div class="d-flex justify-content-between">
+                <a href="{{ url_for('bookings') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left me-1"></i> Back to Bookings
+                </a>
+                
+                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteBookingModal">
+                    <i class="fas fa-trash me-1"></i> Delete Booking
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Booking Modal -->
+<div class="modal fade" id="deleteBookingModal" tabindex="-1" aria-labelledby="deleteBookingModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteBookingModalLabel">Confirm Deletion</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete booking #{{ booking.id }}? This action cannot be undone.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger delete-btn" data-id="{{ booking.id }}" data-type="bookings">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Handle delete booking
+        document.querySelectorAll('.delete-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const id = this.dataset.id;
+                const type = this.dataset.type;
+                
+                fetch(`/${type}/delete/${id}`, {
+                    method: 'POST'
+                })
+                .then(response => {
+                    if (response.ok) {
+                        window.location.href = '/bookings';
+                    } else {
+                        alert('Error deleting booking');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error deleting booking');
+                });
+            });
+        });
+    });
+</script>
+{% endblock %}

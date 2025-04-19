@@ -239,6 +239,22 @@ def update_booking_status(booking_id):
     
     return redirect(url_for('booking_detail', booking_id=booking_id))
 
+@app.route('/bookings/delete/<int:booking_id>', methods=['POST'])
+def delete_booking(booking_id):
+    if 'user_id' not in session:
+        return "Unauthorized", 401
+    
+    from models import Booking
+    
+    # Get booking
+    booking = Booking.query.get_or_404(booking_id)
+    
+    # Delete booking
+    db.session.delete(booking)
+    db.session.commit()
+    
+    return "success"
+
 @app.route('/schedule')
 def schedule():
     if 'user_id' not in session:
