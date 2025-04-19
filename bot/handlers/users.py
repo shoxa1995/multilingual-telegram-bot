@@ -16,7 +16,7 @@ from aiogram.types import (
 from aiogram.dispatcher.filters import Command, Text
 from aiogram.utils.callback_data import CallbackData
 
-from bot.middlewares.i18n import _
+from helpers import translate_message
 from bot.states.booking import BookingStates
 from bot.database import (
     get_or_create_user, update_user_language, get_active_staff,
@@ -54,13 +54,14 @@ async def cmd_start(message: Message, state: FSMContext):
     
     # Welcome message
     await message.answer(
-        _(
+        await translate_message(
             "👋 Welcome to our Booking Bot!\n\n"
             "Here you can book appointments with our specialists.\n\n"
             "Use /book to make a new booking\n"
             "Use /mybookings to view your existing bookings\n"
             "Use /language to change the language\n"
-            "Use /help to get assistance"
+            "Use /help to get assistance",
+            user=message.from_user
         ),
         reply_markup=get_main_menu_keyboard()
     )

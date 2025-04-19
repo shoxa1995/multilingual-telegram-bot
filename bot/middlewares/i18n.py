@@ -1,57 +1,84 @@
 """
-Internationalization middleware for the Telegram bot.
+Simple translation utility for the Telegram bot.
 """
 import gettext
 import os
-from typing import Any, Dict, Tuple
-
-from aiogram import Dispatcher
-from aiogram.contrib.middlewares.i18n import I18nMiddleware as BaseI18nMiddleware
-from aiogram.types import Message, CallbackQuery, User
+from functools import lru_cache
+from typing import Dict
 
 from bot.config import LOCALES_DIR, I18N_DOMAIN, DEFAULT_LANGUAGE, LANGUAGES
 
+# Ensure the locales directory exists
+os.makedirs(LOCALES_DIR, exist_ok=True)
 
-class I18nMiddleware(BaseI18nMiddleware):
+# Dictionary to store gettext translations
+_translations: Dict[str, gettext.GNUTranslations] = {}
+
+
+@lru_cache(maxsize=128)
+def get_translation(language: str):
     """
-    Internationalization middleware.
+    Get a translation for a specific language.
     """
-    async def get_user_locale(self, action: str, args: Tuple[Any]) -> str:
-        """
-        Get the user's locale from the database or from the message.
-        """
-        from bot.database import get_user_language
-        
-        user = None
-        if isinstance(args[0], Message):
-            user = args[0].from_user
-        elif isinstance(args[0], CallbackQuery):
-            user = args[0].from_user
-        
-        if user:
-            # Try to get the user's language from the database
-            db_language = await get_user_language(user.id)
-            if db_language:
-                return db_language
-            
-            # Fallback to the user's Telegram language
-            if user.language_code in LANGUAGES:
-                return user.language_code
-        
-        # Fallback to default language
-        return DEFAULT_LANGUAGE
-
-
-# Initialize i18n middleware
-i18n = I18nMiddleware(I18N_DOMAIN, LOCALES_DIR)
-_ = i18n.gettext
-
-
-def setup_middleware(dp: Dispatcher):
-    """
-    Set up the i18n middleware.
-    """
-    dp.middleware.setup(i18n)
+    if language not in _translations:
+        try:
+            # Try to load translation for the language
+            translation = gettext.translation(
+                I18N_DOMAIN, 
+                LOCALES_DIR, 
+                languages=[language]
+            )
+            _translations[language] = translation
+        except FileNotFoundError:
+            # Fallback to default language
+            try:
+                translation = gettext.translation(
+                    I18N_DOMAIN, 
+                    LOCALES_DIR, 
+                    languages=[DEFAULT_LANGUAGE]
+                )
+                _translations[language] = translation
+            except FileNotFoundError:
+                # Fallback to NullTranslation if no translations are found
+                translation = gettext.NullTranslations()
+                _translations[language] = translation
     
-    # Ensure the locales directory exists
-    os.makedirs(LOCALES_DIR, exist_ok=True)
+    return _translations[language]
+
+
+def _(text: str, language: str = DEFAULT_LANGUAGE) -> str:
+    """
+    Translate text into the specified language.
+    """
+    translation = get_translation(language)
+    return translation.gettext(text)
+
+
+async def get_user_language(user):
+    """
+    Get the language for a user, either from the database or from the user's Telegram settings.
+    """
+    from bot.database import get_user_language
+    
+    if not user:
+        return DEFAULT_LANGUAGE
+    
+    # Try to get the user's language from the database
+    db_language = await get_user_language(user.id)
+    if db_language:
+        return db_language
+    
+    # Fallback to the user's Telegram language
+    if user.language_code in LANGUAGES:
+        return user.language_code
+    
+    # Fallback to default language
+    return DEFAULT_LANGUAGE
+
+
+def setup_middleware(dp):
+    """
+    Placeholder for middleware setup to maintain API compatibility.
+    """
+    # No middleware is used, but we keep this function for API compatibility
+    pass
