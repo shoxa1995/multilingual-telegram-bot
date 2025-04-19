@@ -6,13 +6,14 @@ import asyncio
 import logging
 import os
 try:
-    from aiogram import Bot, Dispatcher
-    from aiogram.dispatcher.storage import MemoryStorage
-    from aiogram.types import BotCommand, ParseMode
+    from aiogram import Bot, Dispatcher, enums
+    from aiogram.fsm.storage.memory import MemoryStorage
+    from aiogram.types import BotCommand
 except ImportError:
     # Fallback classes for when imports are not available
-    class ParseMode:
-        HTML = "HTML"
+    class enums:
+        class ParseMode:
+            HTML = "HTML"
         
     class BotCommand:
         def __init__(self, command, description):
