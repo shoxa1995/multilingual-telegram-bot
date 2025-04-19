@@ -6,7 +6,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 
 from admin.database import Base
-from bot.database import User, Staff, Booking, StaffSchedule, BookingStatus
+from bot.database import TelegramUser, Staff, Booking, StaffSchedule, BookingStatus
 
 class AdminUser(Base):
     """
