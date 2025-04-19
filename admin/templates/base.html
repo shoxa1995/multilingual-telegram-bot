@@ -3,46 +3,85 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ title }} - Booking Admin Panel</title>
-    <!-- Bootstrap CSS -->
+    <title>{{ title }} | Booking Admin</title>
     <link href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css" rel="stylesheet">
-    <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <!-- Custom CSS -->
-    <link href="/static/css/styles.css" rel="stylesheet">
-    <!-- HTMX -->
-    <script src="https://unpkg.com/htmx.org@1.9.2"></script>
+    <style>
+        .sidebar {
+            min-height: 100vh;
+            border-right: 1px solid var(--bs-border-color);
+        }
+        .sidebar .nav-link {
+            margin-bottom: 0.5rem;
+            color: var(--bs-light);
+            border-radius: 0.375rem;
+        }
+        .sidebar .nav-link:hover {
+            background-color: var(--bs-secondary-bg);
+        }
+        .sidebar .nav-link.active {
+            background-color: var(--bs-primary);
+            color: white;
+        }
+        .status-pending { background-color: var(--bs-warning); color: var(--bs-dark); }
+        .status-confirmed { background-color: var(--bs-success); color: white; }
+        .status-cancelled { background-color: var(--bs-danger); color: white; }
+        .status-completed { background-color: var(--bs-info); color: var(--bs-dark); }
+        .status-payment_pending { background-color: var(--bs-warning-subtle); color: var(--bs-warning-text); }
+    </style>
 </head>
 <body>
-
-<!-- Navbar -->
-{% include "components/navbar.html" %}
-
-<div class="container-fluid">
-    <div class="row">
-        <!-- Sidebar -->
-        {% include "components/sidebar.html" %}
-
-        <!-- Main content -->
-        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 main-content">
-            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                <h1 class="h2">{{ title }}</h1>
-                {% block page_actions %}{% endblock %}
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-2 sidebar py-4">
+                <div class="mb-4 text-center">
+                    <h5>Booking Admin</h5>
+                </div>
+                <nav class="nav flex-column">
+                    <a class="nav-link {% if request.path == '/' %}active{% endif %}" href="/">
+                        <i class="fas fa-tachometer-alt me-2"></i> Dashboard
+                    </a>
+                    <a class="nav-link {% if request.path.startswith('/staff') %}active{% endif %}" href="/staff">
+                        <i class="fas fa-user-md me-2"></i> Staff
+                    </a>
+                    <a class="nav-link {% if request.path.startswith('/bookings') %}active{% endif %}" href="/bookings">
+                        <i class="fas fa-calendar-alt me-2"></i> Bookings
+                    </a>
+                    <a class="nav-link {% if request.path.startswith('/schedule') %}active{% endif %}" href="/schedule">
+                        <i class="fas fa-clock me-2"></i> Schedule
+                    </a>
+                    <a class="nav-link" href="/logout">
+                        <i class="fas fa-sign-out-alt me-2"></i> Logout
+                    </a>
+                </nav>
             </div>
-
-            {% block content %}{% endblock %}
-        </main>
+            
+            <!-- Main Content -->
+            <div class="col-md-10 p-4 bg-body-tertiary">
+                <!-- Flash Messages -->
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category if category != 'message' else 'info' }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+                
+                <!-- Main Content -->
+                {% block content %}{% endblock %}
+            </div>
+        </div>
     </div>
-</div>
-
-<!-- Bootstrap JavaScript -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<!-- Alpine.js -->
-<script src="https://cdn.jsdelivr.net/npm/alpinejs@3.12.0/dist/cdn.min.js"></script>
-<!-- Custom JavaScript -->
-<script src="/static/js/app.js"></script>
-
-{% block scripts %}{% endblock %}
-
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+    
+    <!-- Additional JavaScript from child templates -->
+    {% block scripts %}{% endblock %}
 </body>
 </html>
