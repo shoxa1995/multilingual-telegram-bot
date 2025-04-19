@@ -9,6 +9,7 @@ from aiogram import Bot, Dispatcher, enums
 from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.filters.command import Command
 from aiogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.client.default import DefaultBotProperties
 
 # Setup logging
 logging.basicConfig(
@@ -71,7 +72,6 @@ async def main():
         return 1
     
     # Initialize bot and dispatcher with DefaultBotProperties for aiogram 3.7.0+
-    from aiogram.client.default import DefaultBotProperties
     bot = Bot(token=BOT_TOKEN, default=DefaultBotProperties(parse_mode=enums.ParseMode.HTML))
     storage = MemoryStorage()
     dp = Dispatcher(storage=storage)
