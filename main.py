@@ -38,6 +38,11 @@ db = SQLAlchemy(app)
 
 # Telegram bot functionality
 def start_telegram_bot():
+    # First check if bot should be disabled via environment variable
+    if os.environ.get("DISABLE_TELEGRAM_BOT"):
+        logger.info("Telegram bot disabled via environment variable")
+        return
+        
     try:
         # Check if BOT_TOKEN is set
         if not os.environ.get("BOT_TOKEN"):
@@ -55,11 +60,15 @@ def start_telegram_bot():
             loop.run_until_complete(start_bot())
         except Exception as e:
             logger.error(f"Error starting Telegram bot: {e}")
+            # Set environment variable to prevent future attempts
+            os.environ["DISABLE_TELEGRAM_BOT"] = "1"
         finally:
             loop.close()
     except Exception as e:
         logger.error(f"Failed to start Telegram bot: {e}")
         logger.info("Telegram bot functionality temporarily disabled")
+        # Set environment variable to prevent future attempts
+        os.environ["DISABLE_TELEGRAM_BOT"] = "1"
 
 # User model methods
 def set_password(self, password):
@@ -617,6 +626,9 @@ def create_test_data():
     db.session.commit()
     
     return redirect(url_for('bookings'))
+
+# Set environment variable to disable Telegram bot due to dependency conflicts
+os.environ["DISABLE_TELEGRAM_BOT"] = "1"
 
 # Start the bot in a separate thread when the app starts
 bot_thread = threading.Thread(target=start_telegram_bot)
