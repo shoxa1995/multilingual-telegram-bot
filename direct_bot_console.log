@@ -1,0 +1,20 @@
+2025-04-19 15:04:12,003 - direct_telegram_bot - INFO - Starting direct Telegram bot...
+2025-04-19 15:04:13,474 - direct_telegram_bot - INFO - Initializing bot...
+2025-04-19 15:04:14,048 - direct_telegram_bot - INFO - Successfully connected to Telegram as gsbookingbot (ID: 8126004060)
+2025-04-19 15:04:14,048 - direct_telegram_bot - INFO - Starting bot polling...
+2025-04-19 15:04:14,048 - aiogram.dispatcher - INFO - Start polling
+2025-04-19 15:04:14,235 - aiogram.dispatcher - INFO - Run polling for bot @gsbookingbot id=8126004060 - 'Go Study Appointment bot'
+2025-04-19 15:04:14,649 - direct_telegram_bot - INFO - Received /start from 2960603
+2025-04-19 15:04:14,653 - direct_telegram_bot - INFO - Received /help from 2960603
+2025-04-19 15:04:14,654 - direct_telegram_bot - INFO - Received /test from 2960603
+2025-04-19 15:04:14,655 - direct_telegram_bot - INFO - Received message: /book from 2960603
+2025-04-19 15:04:14,655 - direct_telegram_bot - INFO - Received message: /mybookings from 2960603
+2025-04-19 15:04:14,656 - direct_telegram_bot - INFO - Received message: /language from 2960603
+2025-04-19 15:04:14,657 - direct_telegram_bot - INFO - Received message: /book from 2960603
+2025-04-19 15:04:15,296 - aiogram.event - INFO - Update id=338857550 is handled. Duration 647 ms by bot id=8126004060
+2025-04-19 15:04:15,311 - aiogram.event - INFO - Update id=338857547 is handled. Duration 662 ms by bot id=8126004060
+2025-04-19 15:04:15,333 - aiogram.event - INFO - Update id=338857545 is handled. Duration 685 ms by bot id=8126004060
+2025-04-19 15:04:15,354 - aiogram.event - INFO - Update id=338857546 is handled. Duration 706 ms by bot id=8126004060
+2025-04-19 15:04:15,376 - aiogram.event - INFO - Update id=338857549 is handled. Duration 727 ms by bot id=8126004060
+2025-04-19 15:04:15,401 - aiogram.event - INFO - Update id=338857548 is handled. Duration 753 ms by bot id=8126004060
+2025-04-19 15:04:15,427 - aiogram.event - INFO - Update id=338857551 is handled. Duration 777 ms by bot id=8126004060

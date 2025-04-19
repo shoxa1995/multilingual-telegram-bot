@@ -1,0 +1,6 @@
+2025-04-19 14:15:29,889 - __main__ - INFO - Starting Telegram bot polling...
+2025-04-19 14:15:32,129 - root - INFO - Using Telegram Payments TEST mode
+2025-04-19 14:15:34,748 INFO sqlalchemy.engine.Engine select pg_catalog.version()
+2025-04-19 14:15:34,748 - sqlalchemy.engine.Engine - INFO - select pg_catalog.version()
+2025-04-19 14:15:34,749 INFO sqlalchemy.engine.Engine [raw sql] {}
+2025-04-19 14:15:34,749 - sqlalchemy.engine.Engine - INFO - [raw sql] {}

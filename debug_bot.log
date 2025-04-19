@@ -1,0 +1,8 @@
+2025-04-19 14:17:24,948 - __main__ - INFO - Starting debug bot script
+2025-04-19 14:17:24,948 - asyncio - DEBUG - Using selector: EpollSelector
+2025-04-19 14:17:24,949 - __main__ - INFO - Initializing bot with token
+2025-04-19 14:17:24,963 - __main__ - INFO - Testing connection to Telegram API...
+2025-04-19 14:17:25,528 - __main__ - INFO - Bot connected successfully: @gsbookingbot (ID: 8126004060)
+2025-04-19 14:17:25,528 - __main__ - INFO - Starting polling...
+2025-04-19 14:17:25,529 - aiogram.dispatcher - INFO - Start polling
+2025-04-19 14:17:25,714 - aiogram.dispatcher - INFO - Run polling for bot @gsbookingbot id=8126004060 - 'Go Study Appointment bot'

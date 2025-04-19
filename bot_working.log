@@ -1,0 +1,27 @@
+2025-04-19 14:49:57,821 - asyncio - DEBUG - Using selector: EpollSelector
+2025-04-19 14:49:59,774 - working_bot - CRITICAL - Fatal error: Passing `parse_mode`, `disable_web_page_preview` or `protect_content` to Bot initializer is not supported anymore. These arguments have been removed in 3.7.0 version. Use `default=DefaultBotProperties(parse_mode=<ParseMode.HTML: 'HTML'>)` argument instead.
+Traceback (most recent call last):
+  File "/home/runner/workspace/working_telegram_bot.py", line 153, in <module>
+    asyncio.run(main())
+  File "/nix/store/clx0mcir7qw8zk36zbr4jra789g3knf6-python3-3.11.10/lib/python3.11/asyncio/runners.py", line 190, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "/nix/store/clx0mcir7qw8zk36zbr4jra789g3knf6-python3-3.11.10/lib/python3.11/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/nix/store/clx0mcir7qw8zk36zbr4jra789g3knf6-python3-3.11.10/lib/python3.11/asyncio/base_events.py", line 654, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/working_telegram_bot.py", line 52, in main
+    bot = Bot(token=BOT_TOKEN, parse_mode=ParseMode.HTML)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/aiogram/client/bot.py", line 294, in __init__
+    raise TypeError(
+TypeError: Passing `parse_mode`, `disable_web_page_preview` or `protect_content` to Bot initializer is not supported anymore. These arguments have been removed in 3.7.0 version. Use `default=DefaultBotProperties(parse_mode=<ParseMode.HTML: 'HTML'>)` argument instead.
+2025-04-19 14:50:52,047 - asyncio - DEBUG - Using selector: EpollSelector
+2025-04-19 14:50:54,260 - working_bot - INFO - Connected to Telegram as gsbookingbot (ID: 8126004060)
+2025-04-19 14:50:54,261 - working_bot - INFO - Starting bot polling...
+2025-04-19 14:50:54,262 - aiogram.dispatcher - INFO - Start polling
+2025-04-19 14:50:54,490 - aiogram.dispatcher - INFO - Run polling for bot @gsbookingbot id=8126004060 - 'Go Study Appointment bot'
+2025-04-19 14:50:54,681 - working_bot - INFO - Received text message: /book
+2025-04-19 14:50:55,312 - aiogram.event - INFO - Update id=338857534 is handled. Duration 632 ms by bot id=8126004060

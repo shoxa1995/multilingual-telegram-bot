@@ -1,0 +1,31 @@
+2025-04-19 14:17:56,728 - __main__ - INFO - Bot runner starting with PID 31577
+2025-04-19 14:17:56,728 - __main__ - INFO - Starting bot attempt 1/5
+2025-04-19 14:17:58,916 - root - INFO - Using Telegram Payments TEST mode
+2025-04-19 14:17:58,921 - __main__ - INFO - Starting the Telegram bot...
+2025-04-19 14:18:01,034 - sqlalchemy.engine.Engine - INFO - select pg_catalog.version()
+2025-04-19 14:18:01,035 - sqlalchemy.engine.Engine - INFO - [raw sql] {}
+2025-04-19 14:18:01,494 - sqlalchemy.engine.Engine - INFO - select current_schema()
+2025-04-19 14:18:01,495 - sqlalchemy.engine.Engine - INFO - [raw sql] {}
+2025-04-19 14:58:20,551 - persistent_bot - INFO - Starting persistent bot (PID: 3700)
+2025-04-19 14:58:20,551 - asyncio - DEBUG - Using selector: EpollSelector
+2025-04-19 14:58:22,546 - persistent_bot - INFO - Initializing bot...
+2025-04-19 14:58:23,135 - persistent_bot - INFO - Successfully connected to Telegram as gsbookingbot (ID: 8126004060)
+2025-04-19 14:58:23,135 - persistent_bot - INFO - Starting bot polling...
+2025-04-19 14:58:23,135 - aiogram.dispatcher - INFO - Start polling
+2025-04-19 14:58:23,321 - aiogram.dispatcher - INFO - Run polling for bot @gsbookingbot id=8126004060 - 'Go Study Appointment bot'
+2025-04-19 14:58:23,510 - persistent_bot - INFO - Received /help from 2960603
+2025-04-19 14:58:23,511 - persistent_bot - INFO - Received message: /book from 2960603
+2025-04-19 14:58:23,512 - persistent_bot - INFO - Received /start from 2960603
+2025-04-19 14:58:23,512 - persistent_bot - INFO - Received /start from 2960603
+2025-04-19 14:58:23,513 - persistent_bot - INFO - Received message: /book from 2960603
+2025-04-19 14:58:23,514 - persistent_bot - INFO - Received /help from 2960603
+2025-04-19 14:58:24,132 - aiogram.event - INFO - Update id=338857538 is handled. Duration 622 ms by bot id=8126004060
+2025-04-19 14:58:24,149 - aiogram.event - INFO - Update id=338857541 is handled. Duration 636 ms by bot id=8126004060
+2025-04-19 14:58:24,172 - aiogram.event - INFO - Update id=338857540 is handled. Duration 660 ms by bot id=8126004060
+2025-04-19 14:58:24,200 - aiogram.event - INFO - Update id=338857543 is handled. Duration 686 ms by bot id=8126004060
+2025-04-19 14:58:24,225 - aiogram.event - INFO - Update id=338857542 is handled. Duration 712 ms by bot id=8126004060
+2025-04-19 14:58:24,251 - aiogram.event - INFO - Update id=338857539 is handled. Duration 740 ms by bot id=8126004060
+2025-04-19 15:18:32,510 - persistent_bot - INFO - Starting persistent bot (PID: 4513)...
+2025-04-19 15:18:32,511 - persistent_bot - INFO - Starting bot attempt 1/10
+2025-04-19 15:18:34,043 - persistent_bot - ERROR - BOT_TOKEN environment variable not set
+2025-04-19 15:18:34,044 - persistent_bot - WARNING - Bot failed to run properly, retrying (1/10)...

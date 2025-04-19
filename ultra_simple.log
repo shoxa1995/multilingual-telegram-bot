@@ -1,0 +1,12 @@
+2025-04-19 14:55:44,446 - asyncio - DEBUG - Using selector: EpollSelector
+2025-04-19 14:55:46,033 - ultra_simple - INFO - Initializing bot...
+2025-04-19 14:55:46,609 - ultra_simple - INFO - Successfully connected to Telegram as gsbookingbot (ID: 8126004060)
+2025-04-19 14:55:46,609 - ultra_simple - INFO - Starting bot polling...
+2025-04-19 14:55:46,610 - aiogram.dispatcher - INFO - Start polling
+2025-04-19 14:55:46,796 - aiogram.dispatcher - INFO - Run polling for bot @gsbookingbot id=8126004060 - 'Go Study Appointment bot'
+2025-04-19 14:55:46,987 - ultra_simple - INFO - Received /start from 2960603
+2025-04-19 14:55:46,988 - ultra_simple - INFO - Received /start from 2960603
+2025-04-19 14:55:46,989 - ultra_simple - INFO - Received message: /book from 2960603
+2025-04-19 14:55:47,578 - aiogram.event - INFO - Update id=338857536 is handled. Duration 589 ms by bot id=8126004060
+2025-04-19 14:55:47,596 - aiogram.event - INFO - Update id=338857535 is handled. Duration 609 ms by bot id=8126004060
+2025-04-19 14:55:47,623 - aiogram.event - INFO - Update id=338857537 is handled. Duration 634 ms by bot id=8126004060

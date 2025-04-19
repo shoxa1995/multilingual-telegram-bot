@@ -1,0 +1,12 @@
+2025-04-19 14:22:55,782 - __main__ - INFO - === STARTING WORKFLOW BOT ===
+2025-04-19 14:22:55,792 - __main__ - ERROR - ✗ Failed to connect to Telegram: Passing `parse_mode`, `disable_web_page_preview` or `protect_content` to Bot initializer is not supported anymore. These arguments have been removed in 3.7.0 version. Use `default=DefaultBotProperties(parse_mode=<ParseMode.HTML: 'HTML'>)` argument instead.
+2025-04-19 14:22:55,793 - __main__ - ERROR - Failed to connect to Telegram. Exiting.
+2025-04-19 14:23:37,697 - __main__ - INFO - === STARTING WORKFLOW BOT ===
+2025-04-19 14:23:38,270 - __main__ - INFO - ✓ Successfully connected as @gsbookingbot (ID: 8126004060)
+2025-04-19 14:23:38,270 - __main__ - INFO - ✓ Bot name: Go Study Appointment bot
+2025-04-19 14:23:38,271 - __main__ - INFO - ✓ Is bot: True
+2025-04-19 14:23:38,765 - root - INFO - Using Telegram Payments TEST mode
+2025-04-19 14:23:38,770 - __main__ - INFO - Loaded full handler set from main bot implementation
+2025-04-19 14:23:38,770 - __main__ - INFO - Starting polling in task...
+2025-04-19 14:23:38,770 - aiogram.dispatcher - INFO - Start polling
+2025-04-19 14:23:39,330 - aiogram.dispatcher - INFO - Run polling for bot @gsbookingbot id=8126004060 - 'Go Study Appointment bot'

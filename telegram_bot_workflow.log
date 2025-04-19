@@ -1,0 +1,10 @@
+Starting Telegram Bot Workflow...
+2025-04-19 15:01:02,446 - telegram_bot_workflow - INFO - Telegram bot workflow script starting...
+2025-04-19 15:01:02,446 - telegram_bot_workflow - INFO - Starting Telegram bot workflow
+2025-04-19 15:01:02,446 - telegram_bot_workflow - INFO - Starting bot attempt 1/5
+2025-04-19 15:01:04,476 - telegram_bot_workflow - INFO - Successfully connected to Telegram as gsbookingbot (ID: 8126004060)
+2025-04-19 15:01:04,476 - telegram_bot_workflow - INFO - Bot PID: 3914 - starting bot polling...
+2025-04-19 15:01:04,477 - aiogram.dispatcher - INFO - Start polling
+2025-04-19 15:01:04,661 - aiogram.dispatcher - INFO - Run polling for bot @gsbookingbot id=8126004060 - 'Go Study Appointment bot'
+2025-04-19 15:01:04,849 - telegram_bot_workflow - INFO - Received /help from 2960603
+2025-04-19 15:01:05,481 - aiogram.event - INFO - Update id=338857544 is handled. Duration 632 ms by bot id=8126004060

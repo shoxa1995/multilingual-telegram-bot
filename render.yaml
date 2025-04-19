@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: multilingual-telegram-bot
+    env: python
+    plan: free
+    buildCommand: ""
+    startCommand: ./start.sh
+    autoDeploy: true
+

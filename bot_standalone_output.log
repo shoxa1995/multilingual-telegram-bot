@@ -1,0 +1,68 @@
+2025-04-19 14:44:44,802 - standalone_bot - INFO - Starting standalone bot runner
+2025-04-19 14:44:44,802 - standalone_bot - INFO - Starting bot (attempt 1/3)...
+2025-04-19 14:44:46,945 - root - INFO - Using Telegram Payments TEST mode
+2025-04-19 14:44:46,945 - standalone_bot - INFO - Initializing bot...
+2025-04-19 14:44:47,522 - standalone_bot - INFO - Successfully connected to Telegram as gsbookingbot (ID: 8126004060)
+2025-04-19 14:44:47,522 - standalone_bot - INFO - Initializing database...
+2025-04-19 14:44:49,594 INFO sqlalchemy.engine.Engine select pg_catalog.version()
+2025-04-19 14:44:49,594 - sqlalchemy.engine.Engine - INFO - select pg_catalog.version()
+2025-04-19 14:44:49,595 INFO sqlalchemy.engine.Engine [raw sql] {}
+2025-04-19 14:44:49,595 - sqlalchemy.engine.Engine - INFO - [raw sql] {}
+2025-04-19 14:44:50,053 INFO sqlalchemy.engine.Engine select current_schema()
+2025-04-19 14:44:50,053 - sqlalchemy.engine.Engine - INFO - select current_schema()
+2025-04-19 14:44:50,054 INFO sqlalchemy.engine.Engine [raw sql] {}
+2025-04-19 14:44:50,054 - sqlalchemy.engine.Engine - INFO - [raw sql] {}
+2025-04-19 14:44:50,511 INFO sqlalchemy.engine.Engine show standard_conforming_strings
+2025-04-19 14:44:50,511 - sqlalchemy.engine.Engine - INFO - show standard_conforming_strings
+2025-04-19 14:44:50,511 INFO sqlalchemy.engine.Engine [raw sql] {}
+2025-04-19 14:44:50,511 - sqlalchemy.engine.Engine - INFO - [raw sql] {}
+2025-04-19 14:44:50,969 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2025-04-19 14:44:50,969 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2025-04-19 14:44:50,973 INFO sqlalchemy.engine.Engine SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-04-19 14:44:50,973 - sqlalchemy.engine.Engine - INFO - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-04-19 14:44:50,974 INFO sqlalchemy.engine.Engine [generated in 0.00047s] {'table_name': 'telegram_users', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-04-19 14:44:50,974 - sqlalchemy.engine.Engine - INFO - [generated in 0.00047s] {'table_name': 'telegram_users', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-04-19 14:44:51,432 INFO sqlalchemy.engine.Engine SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-04-19 14:44:51,432 - sqlalchemy.engine.Engine - INFO - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-04-19 14:44:51,432 INFO sqlalchemy.engine.Engine [cached since 0.4591s ago] {'table_name': 'staff', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-04-19 14:44:51,432 - sqlalchemy.engine.Engine - INFO - [cached since 0.4591s ago] {'table_name': 'staff', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-04-19 14:44:51,661 INFO sqlalchemy.engine.Engine SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-04-19 14:44:51,661 - sqlalchemy.engine.Engine - INFO - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-04-19 14:44:51,662 INFO sqlalchemy.engine.Engine [cached since 0.6885s ago] {'table_name': 'staff_schedules', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-04-19 14:44:51,662 - sqlalchemy.engine.Engine - INFO - [cached since 0.6885s ago] {'table_name': 'staff_schedules', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-04-19 14:44:51,891 INFO sqlalchemy.engine.Engine SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-04-19 14:44:51,891 - sqlalchemy.engine.Engine - INFO - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-04-19 14:44:51,891 INFO sqlalchemy.engine.Engine [cached since 0.9182s ago] {'table_name': 'bookings', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-04-19 14:44:51,891 - sqlalchemy.engine.Engine - INFO - [cached since 0.9182s ago] {'table_name': 'bookings', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-04-19 14:44:52,122 INFO sqlalchemy.engine.Engine SELECT pg_catalog.pg_type.typname 
+FROM pg_catalog.pg_type JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_type.typnamespace 
+WHERE pg_catalog.pg_type.typname = %(typname_1)s AND pg_catalog.pg_type_is_visible(pg_catalog.pg_type.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-04-19 14:44:52,122 - sqlalchemy.engine.Engine - INFO - SELECT pg_catalog.pg_type.typname 
+FROM pg_catalog.pg_type JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_type.typnamespace 
+WHERE pg_catalog.pg_type.typname = %(typname_1)s AND pg_catalog.pg_type_is_visible(pg_catalog.pg_type.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-04-19 14:44:52,123 INFO sqlalchemy.engine.Engine [generated in 0.00039s] {'typname_1': 'bookingstatus', 'nspname_1': 'pg_catalog'}
+2025-04-19 14:44:52,123 - sqlalchemy.engine.Engine - INFO - [generated in 0.00039s] {'typname_1': 'bookingstatus', 'nspname_1': 'pg_catalog'}
+2025-04-19 14:44:52,352 INFO sqlalchemy.engine.Engine COMMIT
+2025-04-19 14:44:52,352 - sqlalchemy.engine.Engine - INFO - COMMIT
+2025-04-19 14:44:52,581 - standalone_bot - INFO - Database initialized
+2025-04-19 14:44:52,581 - standalone_bot - INFO - Setting up dispatcher...
+2025-04-19 14:44:52,582 - standalone_bot - INFO - Registering handlers...
+2025-04-19 14:44:52,782 - standalone_bot - INFO - Starting bot polling...
+2025-04-19 14:44:52,783 - aiogram.dispatcher - INFO - Start polling
+2025-04-19 14:44:52,969 - aiogram.dispatcher - INFO - Run polling for bot @gsbookingbot id=8126004060 - 'Go Study Appointment bot'

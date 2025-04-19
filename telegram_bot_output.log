@@ -1,0 +1,15 @@
+2025-04-19 14:37:47,529 - telegram_bot - INFO - Starting Telegram bot (attempt 1/5)...
+2025-04-19 14:37:49,923 - root - INFO - Using Telegram Payments TEST mode
+2025-04-19 14:37:49,928 - telegram_bot - ERROR - Error in run_bot: cannot import name 'dp' from 'bot.main' (/home/runner/workspace/bot/main.py)
+Traceback (most recent call last):
+  File "/home/runner/workspace/telegram_bot.py", line 41, in run_bot
+    from bot.main import bot, dp
+ImportError: cannot import name 'dp' from 'bot.main' (/home/runner/workspace/bot/main.py)
+2025-04-19 14:37:49,929 - telegram_bot - INFO - Bot exited with error. Retrying in 2 seconds...
+2025-04-19 14:37:51,931 - telegram_bot - INFO - Starting Telegram bot (attempt 2/5)...
+2025-04-19 14:37:51,932 - telegram_bot - ERROR - Error in run_bot: cannot import name 'dp' from 'bot.main' (/home/runner/workspace/bot/main.py)
+Traceback (most recent call last):
+  File "/home/runner/workspace/telegram_bot.py", line 41, in run_bot
+    from bot.main import bot, dp
+ImportError: cannot import name 'dp' from 'bot.main' (/home/runner/workspace/bot/main.py)
+2025-04-19 14:37:51,933 - telegram_bot - INFO - Bot exited with error. Retrying in 4 seconds...
